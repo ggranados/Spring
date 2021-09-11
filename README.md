@@ -30,3 +30,35 @@ earned for each customer per month and total.
 
 ● Check solution into GitHub
 ~~~~
+
+# Read me
+Build with Java 11, SpringBoot 2.5.4, H2 in memory DB, JPA, Lombok and JUnit
+
+Base set of transaction have been added, which can be requested by the endpoint:
+
+GET http://localhost:8080/api/v1/reward-points/transactions/all
+
+Returning a list of transaction response, identified by a unique id and containing information of client, amount , date of transacrion and an applicable flag (which indicates a valid status of the transaction established by inner transaction domain conditions)
+  {
+    "id": 2003,
+    "clientId": "CLI002",
+    "amount": 150.00,
+    "date": "2020-07-01T04:00:00.000+00:00",
+    "applicable": true
+  },
+
+
+Simulating 3 operations for 3 months by 2 clients : CLI001, CLI002 and CLI003
+
+Three endpoints where added:
+
+GET http://localhost:8080/api/v1/reward-points/clients/all
+Which returns the total points calculation for applicable transactions by client
+
+GET http://localhost:8080/api/v1/reward-points/{{clientId}}/total
+Returns total calculated point of valid transactions by the client specifeid with ID parameter
+
+GET http://localhost:8080/api/v1/reward-points/{{clientId}}/monthly
+Returns total calculated point of valid transactions by month, by the client specifeid with ID parameter
+
+Review API documented in swagger.yml with https://editor.swagger.io/ or IntelliJ
