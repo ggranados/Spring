@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class TransactionService {
@@ -15,15 +16,14 @@ public class TransactionService {
         this.transactionRepository = transactionRepository;
     }
 
-    public Transaction save(Transaction transaction) {
-        return transactionRepository.save(transaction);
+    public List<TransactionResponse> findAll() {
+        return transactionRepository.findAll()
+                .stream()
+                .map(t -> new TransactionResponse(t))
+                .collect(Collectors.toList());
     }
 
-    public List<Transaction> findAll() {
-        return transactionRepository.findAll();
-    }
-
-    public List<Transaction> findAllByClient(String clientID) {
-        return transactionRepository.findTransactionByClientId(clientID);
+    public List<Transaction> findAllApplicableTransactionsByClient(String clientID) {
+        return transactionRepository.findTransactionByClientIdAndApplicable(clientID, Boolean.TRUE);
     }
 }

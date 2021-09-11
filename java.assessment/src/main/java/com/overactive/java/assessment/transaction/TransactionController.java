@@ -1,16 +1,16 @@
 package com.overactive.java.assessment.transaction;
 
-import com.overactive.java.assessment.rewardpoints.RewardPointsCalculator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
-import java.util.Map;
 
 @RestController
-@RequestMapping(path = "api/v1/transactions")
+@RequestMapping(path = "api/v1/reward-points")
 public class TransactionController {
 
     private static TransactionService transactionService;
@@ -21,9 +21,16 @@ public class TransactionController {
         this.transactionService = transactionService;
     }
 
-    @GetMapping(path = "all")
-    public List<Transaction> getAllRewardPoints(){
-        return transactionService.findAll();
-    }
+    @GetMapping(path = "transactions/all")
+    public List<TransactionResponse> getAllTransactions(){
+        List<TransactionResponse>
+            response = transactionService.findAll();
 
+        if(response.isEmpty()){
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, "Transactions not found"
+            );
+        }
+        return response;
+    }
 }

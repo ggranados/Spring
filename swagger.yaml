@@ -1,0 +1,139 @@
+swagger: "2.0"
+info:
+  version: "1.0.0"
+  title: "Reward Points"
+  description: ""
+  contact:
+    email: "g.granados.rosales@gmail.com"
+host: "127.0.0.1:8080"
+basePath: "/api/v1/reward-points"
+tags:
+  - name: "clients"
+    description: "Access to clients reward point information"
+  - name: "transactions"
+    description: "Access to transaction data set"
+schemes:
+  - "http"
+paths:
+  /clients/all:
+    get:
+      tags:
+        - "clients"
+      summary: "All clients reward points"
+      description: ""
+      operationId: "getAllRewardPoints"
+      produces:
+        - "application/json"
+      responses:
+        "400":
+          description: "Not Found"
+        "200":
+          description: "Successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/RewardPointsResponse"
+  /{clientId}/monthly:
+    get:
+      tags:
+        - "clients"
+      summary: "Total reward points by client"
+      description: ""
+      operationId: "getRewardPointsByClientTotal"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "clientId"
+          in: "path"
+          description: "ID of client to find its points"
+          required: true
+          type: "string"
+      responses:
+        "400":
+          description: "Bad Request"
+        "404":
+          description: "Not Found"
+        "200":
+          description: "Successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/MonthRewardPointsResponse"
+
+  /{clientId}/total:
+    get:
+      tags:
+        - "clients"
+      summary: "Total reward points by client"
+      description: ""
+      operationId: "getRewardPointsByClientMonthly"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "clientId"
+          in: "path"
+          description: "ID of client to find its points"
+          required: true
+          type: "string"
+      responses:
+        "400":
+          description: "Bad Request"
+        "404":
+          description: "Not Found"
+        "200":
+          description: "Successful operation"
+          schema:
+            $ref: "#/definitions/RewardPointsResponse"
+
+  /transactions/all:
+    get:
+      tags:
+        - "transactions"
+      summary: "All active client transactions"
+      description: ""
+      operationId: "getAllTransactions"
+      produces:
+        - "application/json"
+      responses:
+        "400":
+          description: "Not Found"
+        "200":
+          description: "Successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Transaction"
+
+definitions:
+  RewardPointsResponse:
+    type: "object"
+    properties:
+      clientId:
+        type: "string"
+      points:
+        type: "integer"
+        format: "int64"
+
+  MonthRewardPointsResponse:
+    type: "object"
+    properties:
+      month:
+        type: "string"
+      points:
+        type: "integer"
+        format: "int64"
+
+  Transaction:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+      clientId:
+        type: "string"
+      amount:
+        type: "number"
+      date:
+        type: "string"
+        format: "date"
+      applicable:
+        type: "boolean"

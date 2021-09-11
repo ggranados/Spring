@@ -2,10 +2,14 @@ package com.overactive.java.assessment.rewardpoints;
 
 import com.overactive.java.assessment.transaction.TransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 
 import java.text.DateFormatSymbols;
-import java.util.*;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -22,42 +26,60 @@ public class RewardPointsService {
         this.rewardPointsCalculator = rewardPointsCalculator;
     }
 
-    public Map getRewardPointsByClientMonthly(String clientId) {
-        return transactionService.findAllByClient(clientId)
+    public List<MonthRewardPointsResponse> getRewardPointsByClientMonthly(String clientId) {
+        return transactionService.findAllApplicableTransactionsByClient(clientId)
                 .stream()
                 .map(t->{
                     String month = getMonthFromDate(t.getDate());
                     Long points = rewardPointsCalculator.calculateBy2PointRule(t.getAmount());
                     points += rewardPointsCalculator.calculateBy1PointRule(t.getAmount());
-                    return new RewardPoints(t.getClientId(),month,points,t.getAmount());
+                    return new MonthRewardPointsResponse(month,points);
                 })
-                .collect(Collectors.groupingBy(foo -> foo.getMonth(),
-                        Collectors.summingLong(foo->foo.getPoints())));
+                .collect(
+                        Collectors.groupingBy(
+                                foo -> foo.getMonth(),
+                                Collectors.summingLong(foo->foo.getPoints())
+                        )
+                )
+                .entrySet().stream().map( e-> new MonthRewardPointsResponse(e.getKey(),e.getValue()))
+                .collect(Collectors.toList());
     }
 
-    public Map getAllRewardPoints() {
+    public List<RewardPointsResponse> getAllRewardPoints() {
         return transactionService.findAll()
                 .stream()
                 .map(t->{
                     String month = getMonthFromDate(t.getDate());
                     Long points = rewardPointsCalculator.calculateBy2PointRule(t.getAmount());
                     points += rewardPointsCalculator.calculateBy1PointRule(t.getAmount());
-                    return new RewardPoints(t.getClientId(),month,points,t.getAmount());
+                    return new RewardPointsResponse(t.getClientId(),points);
                 })
-                .collect(Collectors.groupingBy(foo -> foo.getClientId(),
-                        Collectors.summingLong(foo->foo.getPoints())));
+                .collect(
+                        Collectors.groupingBy(
+                                foo -> foo.getClientId(),
+                                Collectors.summingLong(foo->foo.getPoints())
+                        )
+                )
+                .entrySet().stream().map( e-> new RewardPointsResponse(e.getKey(),e.getValue()))
+                .collect(Collectors.toList());
     }
 
-    public Map getRewardPointsByClientTotal(String clientId) {
-        return transactionService.findAllByClient(clientId)
+    public List<RewardPointsResponse> getRewardPointsByClientTotal(String clientId) {
+        return transactionService.findAllApplicableTransactionsByClient(clientId)
                 .stream()
                 .map(t->{
                     Long points = rewardPointsCalculator.calculateBy2PointRule(t.getAmount());
                     points += rewardPointsCalculator.calculateBy1PointRule(t.getAmount());
-                    return new RewardPoints(t.getClientId(),null,points,t.getAmount());
+                    return new RewardPointsResponse(t.getClientId(),points);
                 })
-                .collect(Collectors.groupingBy(foo -> foo.getClientId(),
-                        Collectors.summingLong(foo->foo.getPoints())));
+                .collect(
+                        Collectors.groupingBy(
+                                foo -> foo.getClientId(),
+                                Collectors.summingLong(foo->foo.getPoints())
+                        )
+                )
+                .entrySet().stream().map( e-> new RewardPointsResponse(e.getKey(),e.getValue()))
+                .collect(Collectors.toList());
     }
 
     private String getMonthFromDate(Date date) {
