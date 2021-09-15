@@ -6,7 +6,7 @@ info:
   contact:
     email: "g.granados.rosales@gmail.com"
 host: "127.0.0.1:8080"
-basePath: "/api/v1/reward-points"
+basePath: "/api/v1/rewards"
 tags:
   - name: "clients"
     description: "Access to clients reward point information"
