@@ -1,5 +1,6 @@
 package com.overactive.java.assessment.rewardpoints;
 
+import com.overactive.java.assessment.util.RewardPointsCalculator;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;

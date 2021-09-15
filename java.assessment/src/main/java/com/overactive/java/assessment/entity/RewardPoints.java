@@ -1,4 +1,4 @@
-package com.overactive.java.assessment.rewardpoints;
+package com.overactive.java.assessment.entity;
 
 
 import lombok.AllArgsConstructor;

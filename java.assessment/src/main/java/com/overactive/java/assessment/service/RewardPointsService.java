@@ -1,15 +1,15 @@
-package com.overactive.java.assessment.rewardpoints;
+package com.overactive.java.assessment.service;
 
-import com.overactive.java.assessment.transaction.TransactionService;
+import com.overactive.java.assessment.response.MonthRewardPointsResponse;
+import com.overactive.java.assessment.response.RewardPointsResponse;
+import com.overactive.java.assessment.util.RewardPointsCalculator;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 
 import java.text.DateFormatSymbols;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service

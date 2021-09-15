@@ -1,5 +1,6 @@
-package com.overactive.java.assessment.transaction;
+package com.overactive.java.assessment.response;
 
+import com.overactive.java.assessment.entity.Transaction;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

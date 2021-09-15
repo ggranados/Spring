@@ -1,5 +1,6 @@
-package com.overactive.java.assessment.transaction;
+package com.overactive.java.assessment.repository;
 
+import com.overactive.java.assessment.entity.Transaction;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

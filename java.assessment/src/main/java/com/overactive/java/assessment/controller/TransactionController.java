@@ -1,5 +1,7 @@
-package com.overactive.java.assessment.transaction;
+package com.overactive.java.assessment.controller;
 
+import com.overactive.java.assessment.response.TransactionResponse;
+import com.overactive.java.assessment.service.TransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,7 +12,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.List;
 
 @RestController
-@RequestMapping(path = "api/v1/reward-points")
+@RequestMapping(path = "api/v1/rewards")
 public class TransactionController {
 
     private static TransactionService transactionService;

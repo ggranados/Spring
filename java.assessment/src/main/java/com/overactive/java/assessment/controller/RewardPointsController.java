@@ -1,5 +1,8 @@
-package com.overactive.java.assessment.rewardpoints;
+package com.overactive.java.assessment.controller;
 
+import com.overactive.java.assessment.response.MonthRewardPointsResponse;
+import com.overactive.java.assessment.response.RewardPointsResponse;
+import com.overactive.java.assessment.service.RewardPointsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -9,10 +12,9 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
-import java.util.Map;
 
 @RestController
-@RequestMapping(path = "api/v1/reward-points")
+@RequestMapping(path = "api/v1/rewards")
 public class RewardPointsController {
 
     private final RewardPointsService rewardPointsService;

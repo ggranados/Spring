@@ -1,4 +1,4 @@
-package com.overactive.java.assessment.rewardpoints;
+package com.overactive.java.assessment.util;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
