@@ -29,11 +29,13 @@ earned for each customer per month and total.
 ● Include a readme
 
 ● Check solution into GitHub
-~~~~
 
 # Read me
 Build with Java 11, SpringBoot 2.5.4, H2 in memory DB, JPA, Lombok and JUnit
-
+Run it with Maven:
+~~~~
+mvn test spring-boot:run
+~~~~
 Base set of transaction have been added, which can be requested by the endpoint:
 
 GET http://localhost:8080/api/v1/reward-points/transactions/all
