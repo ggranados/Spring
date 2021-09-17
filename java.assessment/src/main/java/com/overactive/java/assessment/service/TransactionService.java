@@ -70,6 +70,21 @@ public class TransactionService {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Transaction not found: " + transactionId);
         }
         transactionRepository.delete(t.get());
+
         return new ArrayList<>();
+    }
+
+    public ArrayList<? extends TransactionResponse> editTransaction(Transaction transaction) {
+        logger.debug("Editing transactions with id " + transaction);
+        Optional<Transaction> t = transactionRepository.findById(transaction.getId());
+        if(!t.isPresent()){
+            logger.debug("No transactions with id " + transaction.getId());
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Transaction not found: " + transaction.getId());
+        }
+        transactionRepository.save(transaction);
+
+        ArrayList<TransactionResponse> list = new ArrayList<>();
+        list.add(new TransactionResponse(t.get()));
+        return list;
     }
 }

@@ -195,4 +195,46 @@ public class TransactionController {
         }
     }
 
+    @PutMapping()
+    public GenericRestResponse<? extends TransactionResponse> editTransaction(
+            HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse,
+            @RequestBody @Valid Transaction transaction){
+
+        logger.info(httpServletRequest.getMethod() + ":" + httpServletRequest.getRequestURI());
+
+        HashMap<String, String> metadataMap = new HashMap<>();
+        metadataMap.put(API_VERSION, API_V);
+        metadataMap.put(REQUEST_DATE,new Date().toString());
+
+        ArrayList<? extends TransactionResponse> resultList;
+
+        try {
+
+            if(transaction.getId() == null) {
+                logger.error("Transaction Id was expected");
+                throw new ResponseStatusException(
+                        HttpStatus.BAD_REQUEST, "Transaction Id expected");
+            }
+
+            logger.info("Edit transaction: " + transaction);
+            resultList = transactionService.editTransaction(transaction);
+
+            metadataMap.put(HTTP_RESPONSE, String.valueOf(HttpStatus.OK.value()));
+
+            GenericRestResponse<? extends TransactionResponse>
+                    response = new GenericRestResponse<>(resultList, metadataMap);
+
+            logger.debug("response:"+response.toString());
+            return response;
+        }catch(ResponseStatusException rse) {
+            rse.printStackTrace();
+            httpServletResponse.setStatus(rse.getStatus().value());
+            return getGenericRestResponse(metadataMap, rse.getMessage(), rse.getStatus().value());
+
+        }catch (Exception e){
+            e.printStackTrace();
+            httpServletResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            return getGenericRestResponse(metadataMap, e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value());
+        }
+    }
 }
