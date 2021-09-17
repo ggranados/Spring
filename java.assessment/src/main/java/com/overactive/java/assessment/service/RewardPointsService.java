@@ -4,6 +4,8 @@ import com.overactive.java.assessment.components.RewardPoints2PointsCalculator;
 import com.overactive.java.assessment.response.MonthlyRewardPointsResponse;
 import com.overactive.java.assessment.response.TotalRewardPointsResponse;
 import com.overactive.java.assessment.components.RewardPoints1PointCalculator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -14,6 +16,8 @@ import java.util.stream.Collectors;
 
 @Service
 public class RewardPointsService {
+
+    private static final Logger logger = LoggerFactory.getLogger(RewardPointsService.class);
 
     private static TransactionService transactionService;
     private static RewardPoints1PointCalculator rewardPoints1PointCalculator;
@@ -30,6 +34,7 @@ public class RewardPointsService {
     }
 
     public ArrayList<MonthlyRewardPointsResponse> getRewardPointsByClientMonthly(String clientId) {
+        logger.debug("Getting reward points by client " + clientId + " monthly");
         return transactionService.findAllApplicableTransactionsByClient(clientId)
                 .stream()
                 .map(t->{
@@ -49,6 +54,7 @@ public class RewardPointsService {
     }
 
     public ArrayList<TotalRewardPointsResponse> getAllRewardPoints() {
+        logger.debug("Getting all reward points by client");
         return transactionService.findAll()
                 .stream()
                 .map(t->{
@@ -68,6 +74,7 @@ public class RewardPointsService {
     }
 
     public ArrayList<TotalRewardPointsResponse> getRewardPointsByClientTotal(String clientId) {
+        logger.debug("Getting reward points by client " + clientId + " total");
         return transactionService.findAllApplicableTransactionsByClient(clientId)
                 .stream()
                 .map(t->{
