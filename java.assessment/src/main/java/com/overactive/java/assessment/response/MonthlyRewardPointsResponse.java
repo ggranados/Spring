@@ -6,16 +6,19 @@ import lombok.Data;
 import java.util.Objects;
 
 @Data
-@AllArgsConstructor
-public class MonthRewardPointsResponse {
+public class MonthlyRewardPointsResponse extends RewardPointsResponse{
     private String month;
-    private Long points;
+
+    public MonthlyRewardPointsResponse(Long points, String month) {
+        super(points);
+        this.month = month;
+    }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        MonthRewardPointsResponse that = (MonthRewardPointsResponse) o;
+        MonthlyRewardPointsResponse that = (MonthlyRewardPointsResponse) o;
         return month.equals(that.month);
     }
 

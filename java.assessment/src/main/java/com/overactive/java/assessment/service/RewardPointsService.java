@@ -1,39 +1,42 @@
 package com.overactive.java.assessment.service;
 
-import com.overactive.java.assessment.response.MonthRewardPointsResponse;
-import com.overactive.java.assessment.response.RewardPointsResponse;
-import com.overactive.java.assessment.util.RewardPointsCalculator;
+import com.overactive.java.assessment.components.RewardPoints2PointsCalculator;
+import com.overactive.java.assessment.response.MonthlyRewardPointsResponse;
+import com.overactive.java.assessment.response.TotalRewardPointsResponse;
+import com.overactive.java.assessment.components.RewardPoints1PointCalculator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.text.DateFormatSymbols;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
 public class RewardPointsService {
 
     private static TransactionService transactionService;
-    private static RewardPointsCalculator rewardPointsCalculator;
+    private static RewardPoints1PointCalculator rewardPoints1PointCalculator;
+    private static RewardPoints2PointsCalculator rewardPoints2PointCalculator;
 
     @Autowired
     public RewardPointsService(
             TransactionService transactionService,
-            RewardPointsCalculator rewardPointsCalculator) {
+            @Qualifier("_1PointsCalculator") RewardPoints1PointCalculator rewardPoints1PointCalculator,
+            @Qualifier("_2PointsCalculator") RewardPoints2PointsCalculator rewardPoints2PointCalculator) {
         this.transactionService = transactionService;
-        this.rewardPointsCalculator = rewardPointsCalculator;
+        this.rewardPoints1PointCalculator = rewardPoints1PointCalculator;
+        this.rewardPoints2PointCalculator = rewardPoints2PointCalculator;
     }
 
-    public List<MonthRewardPointsResponse> getRewardPointsByClientMonthly(String clientId) {
+    public ArrayList<MonthlyRewardPointsResponse> getRewardPointsByClientMonthly(String clientId) {
         return transactionService.findAllApplicableTransactionsByClient(clientId)
                 .stream()
                 .map(t->{
                     String month = getMonthFromDate(t.getDate());
-                    Long points = rewardPointsCalculator.calculateBy2PointRule(t.getAmount());
-                    points += rewardPointsCalculator.calculateBy1PointRule(t.getAmount());
-                    return new MonthRewardPointsResponse(month,points);
+                    Long points = rewardPoints1PointCalculator.calculate(t.getAmount());
+                    points += rewardPoints1PointCalculator.calculate(t.getAmount());
+                    return new MonthlyRewardPointsResponse(points,month);
                 })
                 .collect(
                         Collectors.groupingBy(
@@ -41,18 +44,18 @@ public class RewardPointsService {
                                 Collectors.summingLong(foo->foo.getPoints())
                         )
                 )
-                .entrySet().stream().map( e-> new MonthRewardPointsResponse(e.getKey(),e.getValue()))
-                .collect(Collectors.toList());
+                .entrySet().stream().map( e-> new MonthlyRewardPointsResponse(e.getValue(),e.getKey()))
+                .collect(Collectors.toCollection(ArrayList::new));
     }
 
-    public List<RewardPointsResponse> getAllRewardPoints() {
+    public ArrayList<TotalRewardPointsResponse> getAllRewardPoints() {
         return transactionService.findAll()
                 .stream()
                 .map(t->{
                     String month = getMonthFromDate(t.getDate());
-                    Long points = rewardPointsCalculator.calculateBy2PointRule(t.getAmount());
-                    points += rewardPointsCalculator.calculateBy1PointRule(t.getAmount());
-                    return new RewardPointsResponse(t.getClientId(),points);
+                    Long points = rewardPoints2PointCalculator.calculate(t.getAmount());
+                    points += rewardPoints1PointCalculator.calculate(t.getAmount());
+                    return new TotalRewardPointsResponse(points,t.getClientId());
                 })
                 .collect(
                         Collectors.groupingBy(
@@ -60,17 +63,17 @@ public class RewardPointsService {
                                 Collectors.summingLong(foo->foo.getPoints())
                         )
                 )
-                .entrySet().stream().map( e-> new RewardPointsResponse(e.getKey(),e.getValue()))
-                .collect(Collectors.toList());
+                .entrySet().stream().map( e-> new TotalRewardPointsResponse(e.getValue(),e.getKey()))
+                .collect(Collectors.toCollection(ArrayList::new));
     }
 
-    public List<RewardPointsResponse> getRewardPointsByClientTotal(String clientId) {
+    public ArrayList<TotalRewardPointsResponse> getRewardPointsByClientTotal(String clientId) {
         return transactionService.findAllApplicableTransactionsByClient(clientId)
                 .stream()
                 .map(t->{
-                    Long points = rewardPointsCalculator.calculateBy2PointRule(t.getAmount());
-                    points += rewardPointsCalculator.calculateBy1PointRule(t.getAmount());
-                    return new RewardPointsResponse(t.getClientId(),points);
+                    Long points = rewardPoints2PointCalculator.calculate(t.getAmount());
+                    points += rewardPoints1PointCalculator.calculate(t.getAmount());
+                    return new TotalRewardPointsResponse(points,t.getClientId());
                 })
                 .collect(
                         Collectors.groupingBy(
@@ -78,8 +81,8 @@ public class RewardPointsService {
                                 Collectors.summingLong(foo->foo.getPoints())
                         )
                 )
-                .entrySet().stream().map( e-> new RewardPointsResponse(e.getKey(),e.getValue()))
-                .collect(Collectors.toList());
+                .entrySet().stream().map( e-> new TotalRewardPointsResponse(e.getValue(),e.getKey()))
+                .collect(Collectors.toCollection(ArrayList::new));
     }
 
     private String getMonthFromDate(Date date) {
