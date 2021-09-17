@@ -65,8 +65,7 @@ public class TransactionController {
 
     @GetMapping()
     public GenericRestResponse<? extends TransactionResponse> getAllTransactions(
-            HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse,
-            @RequestParam("transactionId") Optional<Long> transactionId){
+            HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse){
 
         logger.info(httpServletRequest.getMethod() + ":" + httpServletRequest.getRequestURI());
 
@@ -77,16 +76,55 @@ public class TransactionController {
 
         ArrayList<? extends TransactionResponse> resultList;
         try {
-            if(!transactionId.isEmpty()) {
-                logger.info("Get transaction by id: " + transactionId);
-                resultList = transactionService.findTransaction(transactionId);
-                logger.debug("resultList:" + resultList.toString());
+
+            logger.info("Get transactions");
+            resultList = transactionService.findAll();
+            logger.debug("resultList:" + resultList.toString());
+
+            if (resultList.isEmpty()) {
+                logger.error("Transactions not found");
+                throw new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "Transactions not found"
+                );
             }
-            else {
-                logger.info("Get transaction by id: " + transactionId);
-                resultList = transactionService.findAll();
-                logger.debug("resultList:" + resultList.toString());
-            }
+
+            metadataMap.put(HTTP_RESPONSE, String.valueOf(HttpStatus.OK.value()));
+
+            GenericRestResponse<? extends TransactionResponse>
+                    response = new GenericRestResponse<>(resultList, metadataMap);
+
+            logger.debug("response:"+response.toString());
+            return response;
+        }catch(ResponseStatusException rse) {
+            rse.printStackTrace();
+            httpServletResponse.setStatus(rse.getStatus().value());
+            return getGenericRestResponse(metadataMap, rse.getMessage(), rse.getStatus().value());
+
+        }catch (Exception e){
+            e.printStackTrace();
+            httpServletResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            return getGenericRestResponse(metadataMap, e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value());
+        }
+    }
+
+    @GetMapping("/{tranId}")
+    public GenericRestResponse<? extends TransactionResponse> getAllTransactions(
+            HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse,
+            @PathVariable("tranId") Optional<Long> transactionId){
+
+        logger.info(httpServletRequest.getMethod() + ":" + httpServletRequest.getRequestURI());
+
+        HashMap<String, String> metadataMap = new HashMap<>();
+        metadataMap.put(API_VERSION, API_V);
+        metadataMap.put(REQUEST_DATE,new Date().toString());
+
+
+        ArrayList<? extends TransactionResponse> resultList;
+        try {
+
+            logger.info("Get transaction by id: " + transactionId);
+            resultList = transactionService.findTransaction(transactionId);
+            logger.debug("resultList:" + resultList.toString());
 
             if (resultList.isEmpty()) {
                 logger.error("Transactions not found");
@@ -152,10 +190,10 @@ public class TransactionController {
         }
     }
 
-    @DeleteMapping()
+    @DeleteMapping("/{tranId}")
     public GenericRestResponse<? extends TransactionResponse> removeTransaction(
             HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse,
-            @RequestParam("transactionId") Optional<Long> transactionId){
+            @PathVariable("tranId") Optional<Long> transactionId){
 
         logger.info(httpServletRequest.getMethod() + ":" + httpServletRequest.getRequestURI());
 

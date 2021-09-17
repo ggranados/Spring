@@ -8,14 +8,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.websocket.server.PathParam;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -39,10 +37,110 @@ public class RewardPointsController {
     }
 
     @GetMapping(path = "clients")
-    public GenericRestResponse<? extends RewardPointsResponse> getRewardPointsByClientMonthly(
+    public GenericRestResponse<? extends RewardPointsResponse> getRewardPointsByClients(
+            HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse){
+
+        logger.info(httpServletRequest.getMethod() + ":" + httpServletRequest.getRequestURI());
+
+        HashMap<String, String> metadataMap = new HashMap<>();
+        metadataMap.put(API_VERSION, API_V);
+        metadataMap.put(REQUEST_DATE,new Date().toString());
+
+        ArrayList<? extends RewardPointsResponse> resultList = null;
+
+        try {
+
+            logger.info("Requested reward points without parameters, assuming all as default");
+            resultList = rewardPointsService.getAllRewardPoints();
+            logger.debug(resultList.toString());
+
+            if (resultList == null || resultList.isEmpty()) {
+                logger.error("Rewards points for client not found");
+                throw new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "Rewards points not found"
+                );
+            }
+
+            metadataMap.put(HTTP_RESPONSE,String.valueOf(HttpStatus.OK.value()));
+
+            GenericRestResponse<? extends RewardPointsResponse>
+                    response = new GenericRestResponse<>(resultList, metadataMap);
+
+            logger.debug("response:"+response.toString());
+            return response;
+
+        }catch(ResponseStatusException rse) {
+            rse.printStackTrace();
+            httpServletResponse.setStatus(rse.getStatus().value());
+            return getGenericRestResponse(metadataMap, rse.getMessage(), rse.getStatus().value());
+
+        }catch (Exception e){
+            e.printStackTrace();
+            httpServletResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            return getGenericRestResponse(metadataMap, e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value());
+        }
+    }
+
+    @GetMapping(path = "clients/{clientId}")
+    public GenericRestResponse<? extends RewardPointsResponse> getRewardPointsByClient(
             HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse,
-            @RequestParam("clientId") Optional<String> clientId,
-            @RequestParam("period") Optional<String> period){
+            @PathVariable("clientId") Optional<String> clientId){
+
+        logger.info(httpServletRequest.getMethod() + ":" + httpServletRequest.getRequestURI());
+        logger.debug("Params:[clientId:" + clientId + "]");
+
+        HashMap<String, String> metadataMap = new HashMap<>();
+        metadataMap.put(API_VERSION, API_V);
+        metadataMap.put(REQUEST_DATE,new Date().toString());
+
+        ArrayList<? extends RewardPointsResponse> resultList = null;
+
+        try {
+
+            if (clientId.isEmpty()) {
+                logger.error("Client was expected");
+                throw new ResponseStatusException(
+                        HttpStatus.BAD_REQUEST, "Client was expected"
+                );
+            }
+
+            logger.info("Requested default total reward points by client");
+            resultList = rewardPointsService.getRewardPointsByClientTotal(clientId.get());
+            logger.debug("resultList:" + resultList.toString());
+
+
+            if (resultList == null || resultList.isEmpty()) {
+                logger.error("Rewards points for client: " + clientId + " not found");
+                throw new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "Rewards points for client: " + clientId + " not found"
+                );
+            }
+
+            metadataMap.put(HTTP_RESPONSE,String.valueOf(HttpStatus.OK.value()));
+
+            GenericRestResponse<? extends RewardPointsResponse>
+                    response = new GenericRestResponse<>(resultList, metadataMap);
+
+            logger.debug("response:"+response.toString());
+            return response;
+
+        }catch(ResponseStatusException rse) {
+            rse.printStackTrace();
+            httpServletResponse.setStatus(rse.getStatus().value());
+            return getGenericRestResponse(metadataMap, rse.getMessage(), rse.getStatus().value());
+
+        }catch (Exception e){
+            e.printStackTrace();
+            httpServletResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            return getGenericRestResponse(metadataMap, e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value());
+        }
+    }
+
+    @GetMapping(path = "clients/{clientId}/{period}")
+    public GenericRestResponse<? extends RewardPointsResponse> getRewardPointsByClientByPeriod(
+            HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse,
+            @PathVariable("clientId") Optional<String> clientId,
+            @PathVariable("period") Optional<String> period){
 
         logger.info(httpServletRequest.getMethod() + ":" + httpServletRequest.getRequestURI());
         logger.debug("Params:[clienteId:"+clientId+",period:"+period+"]");
@@ -80,6 +178,7 @@ public class RewardPointsController {
                         logger.info("Requested default total reward points by client");
                         resultList = rewardPointsService.getRewardPointsByClientTotal(clientId.get());
                         logger.debug("resultList:" + resultList.toString());
+                        metadataMap.put(POINTS_PERIOD,"Expected [MONTHLY|TOTAL] assumed default TOTAL");
                         break;
                 }
             }
