@@ -2,6 +2,7 @@ package com.overactive.java.assessment.controller;
 
 import com.overactive.java.assessment.response.GenericRestResponse;
 import com.overactive.java.assessment.response.RewardPointsResponse;
+import com.overactive.java.assessment.response.TransactionResponse;
 import com.overactive.java.assessment.service.RewardPointsService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,7 +24,7 @@ import java.util.*;
 public class RewardPointsController {
 
     private static Logger logger = LoggerFactory.getLogger(RewardPointsController.class);
-    private static final String API_V = "1";
+    private static final String API_V = "v1";
 
     private final RewardPointsService rewardPointsService;
 
@@ -93,25 +94,25 @@ public class RewardPointsController {
             return response;
 
         }catch(ResponseStatusException rse) {
-            metadataMap.put(HTTP_RESPONSE, String.valueOf(rse.getStatus().value()));
-            metadataMap.put(RESPONSE_DATE, new Date().toString());
-            metadataMap.put(ERROR_MESSAGE, rse.getMessage());
-            GenericRestResponse<? extends RewardPointsResponse> response = new GenericRestResponse<>(null, metadataMap);
-            logger.error(rse.getMessage());
             rse.printStackTrace();
-            logger.debug("Response:"+response.toString());
-            return response;
+            return getGenericRestResponse(metadataMap, rse.getMessage(), rse.getStatus().value());
 
         }catch (Exception e){
-            metadataMap.put(HTTP_RESPONSE, String.valueOf(HttpStatus.INTERNAL_SERVER_ERROR.value()));
-            metadataMap.put(RESPONSE_DATE, new Date().toString());
-            metadataMap.put(ERROR_MESSAGE, e.getMessage());
-            GenericRestResponse<? extends RewardPointsResponse> response = new GenericRestResponse<>(null, metadataMap);
-            logger.error(e.getMessage());
             e.printStackTrace();
-            logger.debug("Response:"+response.toString());
-            return response;
+            return getGenericRestResponse(metadataMap, e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value());
         }
+    }
+
+    private GenericRestResponse<? extends RewardPointsResponse> getGenericRestResponse
+            (HashMap<String, String> metadataMap, String exMessage, Integer errorCode) {
+        metadataMap.put(HTTP_RESPONSE, errorCode.toString());
+        metadataMap.put(RESPONSE_DATE, new Date().toString());
+        metadataMap.put(ERROR_MESSAGE, exMessage);
+        GenericRestResponse<? extends RewardPointsResponse>
+                response = new GenericRestResponse<>(null, metadataMap);
+        logger.error(exMessage);
+        logger.debug("Response:"+response.toString());
+        return response;
     }
 
 
