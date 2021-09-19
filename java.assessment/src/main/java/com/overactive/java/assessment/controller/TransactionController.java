@@ -37,7 +37,7 @@ public class TransactionController {
         this.transactionService = transactionService;
     }
 
-    private GenericRestResponse<? extends TransactionResponse> getGenericRestResponse
+    private GenericRestResponse<? extends TransactionResponse> getGenericErrorRestResponse
             (HashMap<String, String> metadataMap, String exMessage, Integer errorCode) {
         metadataMap.put(HTTP_RESPONSE, errorCode.toString());
         metadataMap.put(ERROR_MESSAGE, exMessage);
@@ -52,14 +52,11 @@ public class TransactionController {
     public final GenericRestResponse<? extends TransactionResponse> handleValidationExceptions
             (Exception ex, WebRequest request) {
         HashMap<String, String> metadataMap = new HashMap<>();
-        metadataMap.put(API_VERSION, API_V);
-        metadataMap.put(REQUEST_DATE,new Date().toString());
-        metadataMap.put(HTTP_RESPONSE, String.valueOf(HttpStatus.BAD_REQUEST.value()));
-        metadataMap.put(ERROR_MESSAGE, ex.getMessage());
+
         GenericRestResponse<? extends TransactionResponse>
-                response = new GenericRestResponse<>(null,metadataMap);
-        logger.error(ex.getMessage());
-        logger.debug(response.toString());
+                response =
+        getGenericErrorRestResponse(metadataMap, ex.getMessage(), HttpStatus.BAD_REQUEST.value());
+
         return response;
     }
 
@@ -98,17 +95,17 @@ public class TransactionController {
         }catch(ResponseStatusException rse) {
             rse.printStackTrace();
             httpServletResponse.setStatus(rse.getStatus().value());
-            return getGenericRestResponse(metadataMap, rse.getMessage(), rse.getStatus().value());
+            return getGenericErrorRestResponse(metadataMap, rse.getMessage(), rse.getStatus().value());
 
         }catch (Exception e){
             e.printStackTrace();
             httpServletResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
-            return getGenericRestResponse(metadataMap, e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value());
+            return getGenericErrorRestResponse(metadataMap, e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value());
         }
     }
 
     @GetMapping("/{tranId}")
-    public GenericRestResponse<? extends TransactionResponse> getAllTransactions(
+    public GenericRestResponse<? extends TransactionResponse> getTransaction(
             HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse,
             @PathVariable("tranId") Optional<Long> transactionId){
 
@@ -143,12 +140,12 @@ public class TransactionController {
         }catch(ResponseStatusException rse) {
             rse.printStackTrace();
             httpServletResponse.setStatus(rse.getStatus().value());
-            return getGenericRestResponse(metadataMap, rse.getMessage(), rse.getStatus().value());
+            return getGenericErrorRestResponse(metadataMap, rse.getMessage(), rse.getStatus().value());
 
         }catch (Exception e){
             e.printStackTrace();
             httpServletResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
-            return getGenericRestResponse(metadataMap, e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value());
+            return getGenericErrorRestResponse(metadataMap, e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value());
         }
     }
 
@@ -181,12 +178,12 @@ public class TransactionController {
         }catch(ResponseStatusException rse) {
             rse.printStackTrace();
             httpServletResponse.setStatus(rse.getStatus().value());
-            return getGenericRestResponse(metadataMap, rse.getMessage(), rse.getStatus().value());
+            return getGenericErrorRestResponse(metadataMap, rse.getMessage(), rse.getStatus().value());
 
         }catch (Exception e){
             e.printStackTrace();
             httpServletResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
-            return getGenericRestResponse(metadataMap, e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value());
+            return getGenericErrorRestResponse(metadataMap, e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value());
         }
     }
 
@@ -224,12 +221,12 @@ public class TransactionController {
         }catch(ResponseStatusException rse) {
             rse.printStackTrace();
             httpServletResponse.setStatus(rse.getStatus().value());
-            return getGenericRestResponse(metadataMap, rse.getMessage(), rse.getStatus().value());
+            return getGenericErrorRestResponse(metadataMap, rse.getMessage(), rse.getStatus().value());
 
         }catch (Exception e){
             e.printStackTrace();
             httpServletResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
-            return getGenericRestResponse(metadataMap, e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value());
+            return getGenericErrorRestResponse(metadataMap, e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value());
         }
     }
 
@@ -267,12 +264,12 @@ public class TransactionController {
         }catch(ResponseStatusException rse) {
             rse.printStackTrace();
             httpServletResponse.setStatus(rse.getStatus().value());
-            return getGenericRestResponse(metadataMap, rse.getMessage(), rse.getStatus().value());
+            return getGenericErrorRestResponse(metadataMap, rse.getMessage(), rse.getStatus().value());
 
         }catch (Exception e){
             e.printStackTrace();
             httpServletResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
-            return getGenericRestResponse(metadataMap, e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value());
+            return getGenericErrorRestResponse(metadataMap, e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value());
         }
     }
 }
