@@ -1,5 +1,6 @@
 package com.overactive.java.assessment.response;
 
+import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -7,6 +8,8 @@ import java.util.Objects;
 
 @Data
 public class MonthlyRewardPointsResponse extends RewardPointsResponse{
+
+    @ApiModelProperty(value = "Month name")
     private String month;
 
     public MonthlyRewardPointsResponse(Long points, String month) {

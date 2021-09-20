@@ -97,7 +97,7 @@ Gets all applicable Reward Points by all clients
 ~~~~
 GET /api/v1/rewards/clients/{clientId}
 ~~~~
-Gets all applicable Reward Points by client 
+Gets all applicable Reward Points by client ID
 ~~~~
 GET /api/v1/rewards/clients/{clientId}/{period}
 ~~~~
@@ -129,7 +129,7 @@ Edits a persisted transaction
 ~~~~
 GET /api/v1/transactions/{tranId}
 ~~~~
-Get transaction by ID
+Gets transaction by ID
 ~~~~
 DELETE /api/v1/transactions/{tranId}
 ~~~~

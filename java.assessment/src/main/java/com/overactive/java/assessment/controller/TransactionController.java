@@ -4,6 +4,8 @@ import com.overactive.java.assessment.entity.Transaction;
 import com.overactive.java.assessment.response.GenericRestResponse;
 import com.overactive.java.assessment.response.TransactionResponse;
 import com.overactive.java.assessment.service.TransactionService;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,7 +62,10 @@ public class TransactionController {
         return response;
     }
 
-    @GetMapping()
+    @GetMapping(produces="application/json")
+    @ApiOperation(value = "Get all transaction",
+            notes = "Gets all transactions persisted",
+            response = TransactionResponse.class)
     public GenericRestResponse<? extends TransactionResponse> getAllTransactions(
             HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse){
 
@@ -104,9 +109,13 @@ public class TransactionController {
         }
     }
 
-    @GetMapping("/{tranId}")
+    @GetMapping(value= "/{tranId}", produces="application/json")
+    @ApiOperation(value = "Get transaction",
+            notes = "Get transaction by ID",
+            response = TransactionResponse.class)
     public GenericRestResponse<? extends TransactionResponse> getTransaction(
             HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse,
+            @ApiParam(value = "Transaction identification", required = true)
             @PathVariable("tranId") Optional<Long> transactionId){
 
         logger.info(httpServletRequest.getMethod() + ":" + httpServletRequest.getRequestURI());
@@ -114,7 +123,6 @@ public class TransactionController {
         HashMap<String, String> metadataMap = new HashMap<>();
         metadataMap.put(API_VERSION, API_V);
         metadataMap.put(REQUEST_DATE,new Date().toString());
-
 
         ArrayList<? extends TransactionResponse> resultList;
         try {
@@ -149,9 +157,13 @@ public class TransactionController {
         }
     }
 
-    @PostMapping
+    @PostMapping(consumes="application/json", produces="application/json")
+    @ApiOperation(value = "Save transaction",
+            notes = "Persist a new transaction to DB",
+            response = GenericRestResponse.class)
     public GenericRestResponse<? extends TransactionResponse> saveTransaction(
             HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse,
+            @ApiParam(value = "Transaction data", required = true)
             @RequestBody @Valid Transaction transaction){
         logger.info(httpServletRequest.getMethod() + ":" + httpServletRequest.getRequestURI());
 
@@ -187,9 +199,13 @@ public class TransactionController {
         }
     }
 
-    @DeleteMapping("/{tranId}")
+    @DeleteMapping(value="/{tranId}", produces="application/json")
+    @ApiOperation(value = "Delete transaction by ID",
+            notes = "Removes a transaction by ID from DB",
+            response = GenericRestResponse.class)
     public GenericRestResponse<? extends TransactionResponse> removeTransaction(
             HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse,
+            @ApiParam(value = "Transaction identification", required = true)
             @PathVariable("tranId") Optional<Long> transactionId){
 
         logger.info(httpServletRequest.getMethod() + ":" + httpServletRequest.getRequestURI());
@@ -230,9 +246,13 @@ public class TransactionController {
         }
     }
 
-    @PutMapping()
+    @PutMapping(consumes="application/json", produces="application/json")
+    @ApiOperation(value = "Edit transaction by ID",
+            notes = "Edits a persisted transaction",
+            response = TransactionResponse.class)
     public GenericRestResponse<? extends TransactionResponse> editTransaction(
             HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse,
+            @ApiParam(value = "Transaction data", required = true)
             @RequestBody @Valid Transaction transaction){
 
         logger.info(httpServletRequest.getMethod() + ":" + httpServletRequest.getRequestURI());

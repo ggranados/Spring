@@ -1,8 +1,9 @@
 package com.overactive.java.assessment.controller;
 
-import com.overactive.java.assessment.response.GenericRestResponse;
-import com.overactive.java.assessment.response.RewardPointsResponse;
+import com.overactive.java.assessment.response.*;
 import com.overactive.java.assessment.service.RewardPointsService;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +37,10 @@ public class RewardPointsController {
         this.rewardPointsService = rewardPointsService;
     }
 
-    @GetMapping(path = "clients")
+    @GetMapping(path = "clients", produces="application/json")
+    @ApiOperation(value = "Get all reward points",
+            notes = "Gets all applicable Reward Points by all clients",
+            response = TotalRewardPointsResponse.class)
     public GenericRestResponse<? extends RewardPointsResponse> getRewardPointsByClients(
             HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse){
 
@@ -81,9 +85,13 @@ public class RewardPointsController {
         }
     }
 
-    @GetMapping(path = "clients/{clientId}")
+    @GetMapping(path = "clients/{clientId}", produces="application/json")
+    @ApiOperation(value = "Get reward points by client",
+            notes = "Gets reward points by client ID and period ID",
+            response = TotalRewardPointsResponse.class)
     public GenericRestResponse<? extends RewardPointsResponse> getRewardPointsByClient(
             HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse,
+            @ApiParam(value = "Client identification", required = true)
             @PathVariable("clientId") Optional<String> clientId){
 
         logger.info(httpServletRequest.getMethod() + ":" + httpServletRequest.getRequestURI());
@@ -136,10 +144,15 @@ public class RewardPointsController {
         }
     }
 
-    @GetMapping(path = "clients/{clientId}/{period}")
+    @GetMapping(path = "clients/{clientId}/{period}", produces="application/json")
+    @ApiOperation(value = "Get reward points by client ID and period ID",
+            notes = "Gets all applicable Rewards Points by client and period, which can be monthly or total (as default)",
+            response = MonthlyRewardPointsResponse.class)
     public GenericRestResponse<? extends RewardPointsResponse> getRewardPointsByClientByPeriod(
             HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse,
+            @ApiParam(value = "Client identification", required = true)
             @PathVariable("clientId") Optional<String> clientId,
+            @ApiParam(value = "Period identification", required = true, allowableValues = "MONTHLY,TOTAL")
             @PathVariable("period") Optional<String> period){
 
         logger.info(httpServletRequest.getMethod() + ":" + httpServletRequest.getRequestURI());

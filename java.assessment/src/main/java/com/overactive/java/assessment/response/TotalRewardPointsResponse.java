@@ -1,5 +1,6 @@
 package com.overactive.java.assessment.response;
 
+import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -8,6 +9,8 @@ import java.util.Objects;
 
 @Data
 public class TotalRewardPointsResponse extends RewardPointsResponse{
+
+    @ApiModelProperty(value = "Client's name")
     private String clientId;
 
     public TotalRewardPointsResponse(Long points, String clientId) {

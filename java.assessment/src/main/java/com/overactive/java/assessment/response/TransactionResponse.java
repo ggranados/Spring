@@ -1,6 +1,7 @@
 package com.overactive.java.assessment.response;
 
 import com.overactive.java.assessment.entity.Transaction;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,10 +14,16 @@ import java.util.Objects;
 @AllArgsConstructor
 @NoArgsConstructor
 public class TransactionResponse {
+
+    @ApiModelProperty(value = "Transaction ID")
     private Long id;
+    @ApiModelProperty(value = "Client Identification")
     private String clientId;
+    @ApiModelProperty(value = "Transaction amount")
     private BigDecimal amount;
+    @ApiModelProperty(value = "Transaction entering date")
     private Date date;
+    @ApiModelProperty(value = "Reward points applicable flag")
     private Boolean applicable;
 
     public TransactionResponse(Transaction t){
