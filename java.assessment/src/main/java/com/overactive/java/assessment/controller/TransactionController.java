@@ -186,6 +186,7 @@ public class TransactionController {
             GenericRestResponse<? extends TransactionResponse>
                     response = new GenericRestResponse<>(resultList, metadataMap);
 
+            httpServletResponse.setStatus(HttpStatus.CREATED.value());
             logger.debug("response:"+response.toString());
             return response;
         }catch(ResponseStatusException rse) {
