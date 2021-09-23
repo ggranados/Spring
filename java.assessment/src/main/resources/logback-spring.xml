@@ -15,8 +15,8 @@
     </appender>
 
 
-    <logger name="logging.level.org.springframework.web.servlet.DispatcherServlet" level="DEBUG"/>
-    <logger name="com.overactive.java.assessment" level="DEBUG"/>
+    <logger name="logging.level.org.springframework.web.servlet.DispatcherServlet" level="INFO"/>
+    <logger name="com.overactive.java.assessment" level="INFO"/>
 
     <root level="INFO">
         <appender-ref ref="Console" />
