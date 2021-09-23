@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -37,7 +38,8 @@ public class RewardPointsController {
         this.rewardPointsService = rewardPointsService;
     }
 
-    @GetMapping(path = "clients", produces="application/json")
+    @GetMapping(path = "clients", produces= MediaType.APPLICATION_JSON_VALUE
+    )
     @ApiOperation(value = "Get all reward points",
             notes = "Gets all applicable Reward Points by all clients",
             response = TotalRewardPointsResponse.class)
@@ -85,7 +87,8 @@ public class RewardPointsController {
         }
     }
 
-    @GetMapping(path = "clients/{clientId}", produces="application/json")
+    @GetMapping(path = "clients/{clientId}", produces=MediaType.APPLICATION_JSON_VALUE
+    )
     @ApiOperation(value = "Get reward points by client",
             notes = "Gets reward points by client ID and period ID",
             response = TotalRewardPointsResponse.class)
@@ -144,7 +147,8 @@ public class RewardPointsController {
         }
     }
 
-    @GetMapping(path = "clients/{clientId}/{period}", produces="application/json")
+    @GetMapping(path = "clients/{clientId}/{period}", produces=MediaType.APPLICATION_JSON_VALUE
+    )
     @ApiOperation(value = "Get reward points by client ID and period ID",
             notes = "Gets all applicable Rewards Points by client and period, which can be monthly or total (as default)",
             response = MonthlyRewardPointsResponse.class)

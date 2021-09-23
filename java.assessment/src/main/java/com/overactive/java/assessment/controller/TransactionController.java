@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.WebRequest;
@@ -62,7 +63,7 @@ public class TransactionController {
         return response;
     }
 
-    @GetMapping(produces="application/json")
+    @GetMapping(produces=MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Get all transaction",
             notes = "Gets all transactions persisted",
             response = TransactionResponse.class)
@@ -109,7 +110,7 @@ public class TransactionController {
         }
     }
 
-    @GetMapping(value= "/{tranId}", produces="application/json")
+    @GetMapping(value= "/{tranId}", produces=MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Get transaction",
             notes = "Get transaction by ID",
             response = TransactionResponse.class)
@@ -157,7 +158,7 @@ public class TransactionController {
         }
     }
 
-    @PostMapping(consumes="application/json", produces="application/json")
+    @PostMapping(consumes=MediaType.APPLICATION_JSON_VALUE, produces=MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Save transaction",
             notes = "Persist a new transaction to DB",
             response = GenericRestResponse.class)
@@ -199,7 +200,7 @@ public class TransactionController {
         }
     }
 
-    @DeleteMapping(value="/{tranId}", produces="application/json")
+    @DeleteMapping(value="/{tranId}", produces= MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Delete transaction by ID",
             notes = "Removes a transaction by ID from DB",
             response = GenericRestResponse.class)
@@ -246,7 +247,7 @@ public class TransactionController {
         }
     }
 
-    @PutMapping(consumes="application/json", produces="application/json")
+    @PutMapping(consumes=MediaType.APPLICATION_JSON_VALUE, produces=MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Edit transaction by ID",
             notes = "Edits a persisted transaction",
             response = TransactionResponse.class)
