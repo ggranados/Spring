@@ -40,7 +40,7 @@ public class RewardPointsService {
                 .map(t->{
                     String month = getMonthFromDate(t.getDate());
                     Long points = rewardPoints1PointCalculator.calculate(t.getAmount());
-                    points += rewardPoints1PointCalculator.calculate(t.getAmount());
+                    points += rewardPoints2PointCalculator.calculate(t.getAmount());
                     return new MonthlyRewardPointsResponse(points,month);
                 })
                 .collect(
