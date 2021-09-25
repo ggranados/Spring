@@ -1,9 +1,8 @@
 package com.overactive.java.assessment.service;
 
-import com.overactive.java.assessment.components.RewardPoints1PointCalculator;
+import com.overactive.java.assessment.components.RewardPoints1PointsCalculator;
 import com.overactive.java.assessment.components.RewardPoints2PointsCalculator;
 
-import com.overactive.java.assessment.entity.Transaction;
 import com.overactive.java.assessment.response.MonthlyRewardPointsResponse;
 import com.overactive.java.assessment.response.TotalRewardPointsResponse;
 import com.overactive.java.assessment.response.TransactionResponse;
@@ -20,25 +19,25 @@ import java.util.ArrayList;
 import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
-class RewardPointsServiceTest {
+class RewardPointsServiceImplTest {
 
     @Mock
-    TransactionService tranService;
+    TransactionServiceImpl tranService;
 
     @Mock
-    RewardPoints1PointCalculator _1point;
+    RewardPoints1PointsCalculator _1point;
 
     @Mock
     RewardPoints2PointsCalculator _2point;
 
     @InjectMocks
-    RewardPointsService service;
+    RewardPointsServiceImpl service;
 
 
     @Test
     void getRewardPointsByClientMonthly() {
-        ArrayList<Transaction> data = new ArrayList<>();
-        data.add(trxApplicableForBoth);
+        ArrayList<TransactionResponse> data = new ArrayList<>();
+        data.add(new TransactionResponse(trxApplicableForBoth));
 
         when(tranService.findAllApplicableTransactionsByClient("CLI001")).thenReturn(data);
         when(_1point.calculate(trxApplicableForBoth.getAmount())).thenReturn(50L);
@@ -83,8 +82,8 @@ class RewardPointsServiceTest {
     @Test
     @DisplayName("Service should return a list of Rewards Points with results for CLI001 and 90 points")
     void getRewardPointsByClientTotal() {
-        ArrayList<Transaction> data = new ArrayList<>();
-        data.add(trxApplicableForBoth);
+        ArrayList<TransactionResponse> data = new ArrayList<>();
+        data.add(new TransactionResponse(trxApplicableForBoth));
 
         when(tranService.findAllApplicableTransactionsByClient("CLI001")).thenReturn(data);
         when(_1point.calculate(trxApplicableForBoth.getAmount())).thenReturn(50L);

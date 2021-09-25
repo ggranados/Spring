@@ -3,7 +3,7 @@ package com.overactive.java.assessment.controller;
 import com.overactive.java.assessment.entity.Transaction;
 import com.overactive.java.assessment.response.GenericRestResponse;
 import com.overactive.java.assessment.response.TransactionResponse;
-import com.overactive.java.assessment.service.TransactionService;
+import com.overactive.java.assessment.service.TransactionServiceImpl;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.slf4j.Logger;
@@ -32,11 +32,11 @@ public class TransactionController {
 
     private static Logger logger = LoggerFactory.getLogger(TransactionController.class);
     private static final String API_V = "v1";
-    private static TransactionService transactionService;
+    private static TransactionServiceImpl transactionService;
 
     @Autowired
     public TransactionController(
-            TransactionService transactionService) {
+            TransactionServiceImpl transactionService) {
         this.transactionService = transactionService;
     }
 

@@ -1,7 +1,7 @@
 package com.overactive.java.assessment.controller;
 
 import com.overactive.java.assessment.response.*;
-import com.overactive.java.assessment.service.RewardPointsService;
+import com.overactive.java.assessment.service.RewardPointsServiceImpl;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.slf4j.Logger;
@@ -15,7 +15,6 @@ import org.springframework.web.server.ResponseStatusException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.websocket.server.PathParam;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -31,10 +30,10 @@ public class RewardPointsController {
     private static Logger logger = LoggerFactory.getLogger(RewardPointsController.class);
     private static final String API_V = "v1";
 
-    private final RewardPointsService rewardPointsService;
+    private final RewardPointsServiceImpl rewardPointsService;
 
     @Autowired
-    public RewardPointsController(RewardPointsService rewardPointsService){
+    public RewardPointsController(RewardPointsServiceImpl rewardPointsService){
         this.rewardPointsService = rewardPointsService;
     }
 
