@@ -1,5 +1,7 @@
 package com.overactive.java.assessment.components;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
@@ -8,6 +10,7 @@ import java.math.BigDecimal;
 
 @Component("_2PointsCalculator")
 @PropertySource("classpath:rewardpoints.properties")
+@Getter @Setter
 public class RewardPoints2PointsCalculator implements PointsCalculator{
 
     @Value("${_2PointsCalculator.baseAmount}")
