@@ -10,24 +10,24 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Optional;
 
-import static com.overactive.java.assessment.response.ResponseMetadata.*;
 
 @RestController
 @RequestMapping(path = "api/v1/rewards")
 @Validated
 public class RewardPointsController {
 
-    private static Logger logger = LoggerFactory.getLogger(RewardPointsController.class);
+    private static final Logger logger = LoggerFactory.getLogger(RewardPointsController.class);
     private static final String API_V = "v1";
 
     private final RewardPointsServiceImpl rewardPointsService;
@@ -35,6 +35,13 @@ public class RewardPointsController {
     @Autowired
     public RewardPointsController(RewardPointsServiceImpl rewardPointsService){
         this.rewardPointsService = rewardPointsService;
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public final GenericRestResponse<? extends RewardPointsResponse> handleValidationExceptions
+            (Exception ex, WebRequest request) {
+
+        return getGenericErrorRestResponse(ex.getMessage(), HttpStatus.BAD_REQUEST.value());
     }
 
     @GetMapping(path = "clients", produces= MediaType.APPLICATION_JSON_VALUE
@@ -47,11 +54,7 @@ public class RewardPointsController {
 
         logger.info(httpServletRequest.getMethod() + ":" + httpServletRequest.getRequestURI());
 
-        HashMap<String, String> metadataMap = new HashMap<>();
-        metadataMap.put(API_VERSION, API_V);
-        metadataMap.put(REQUEST_DATE,new Date().toString());
-
-        ArrayList<? extends RewardPointsResponse> resultList = null;
+        ArrayList<? extends RewardPointsResponse> resultList;
 
         try {
 
@@ -59,30 +62,28 @@ public class RewardPointsController {
             resultList = rewardPointsService.getAllRewardPoints();
             logger.debug(resultList.toString());
 
-            if (resultList == null || resultList.isEmpty()) {
+            if (resultList.isEmpty()) {
                 logger.error("Rewards points for client not found");
                 throw new ResponseStatusException(
                         HttpStatus.NOT_FOUND, "Rewards points not found"
                 );
             }
 
-            metadataMap.put(HTTP_RESPONSE,String.valueOf(HttpStatus.OK.value()));
-
             GenericRestResponse<? extends RewardPointsResponse>
-                    response = new GenericRestResponse<>(resultList, metadataMap);
+                    response = getGenericRestResponse(resultList,HttpStatus.OK.toString(), "");
 
-            logger.debug("response:"+response.toString());
+            logger.debug("response:"+response);
             return response;
 
         }catch(ResponseStatusException rse) {
             rse.printStackTrace();
             httpServletResponse.setStatus(rse.getStatus().value());
-            return getGenericRestResponse(metadataMap, rse.getMessage(), rse.getStatus().value());
+            return getGenericErrorRestResponse(rse.getMessage(), rse.getStatus().value());
 
         }catch (Exception e){
             e.printStackTrace();
             httpServletResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
-            return getGenericRestResponse(metadataMap, e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value());
+            return getGenericErrorRestResponse(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value());
         }
     }
 
@@ -99,11 +100,7 @@ public class RewardPointsController {
         logger.info(httpServletRequest.getMethod() + ":" + httpServletRequest.getRequestURI());
         logger.debug("Params:[clientId:" + clientId + "]");
 
-        HashMap<String, String> metadataMap = new HashMap<>();
-        metadataMap.put(API_VERSION, API_V);
-        metadataMap.put(REQUEST_DATE,new Date().toString());
-
-        ArrayList<? extends RewardPointsResponse> resultList = null;
+        ArrayList<? extends RewardPointsResponse> resultList;
 
         try {
 
@@ -119,30 +116,28 @@ public class RewardPointsController {
             logger.debug("resultList:" + resultList.toString());
 
 
-            if (resultList == null || resultList.isEmpty()) {
+            if (resultList.isEmpty()) {
                 logger.error("Rewards points for client: " + clientId + " not found");
                 throw new ResponseStatusException(
                         HttpStatus.NOT_FOUND, "Rewards points for client: " + clientId + " not found"
                 );
             }
 
-            metadataMap.put(HTTP_RESPONSE,String.valueOf(HttpStatus.OK.value()));
-
             GenericRestResponse<? extends RewardPointsResponse>
-                    response = new GenericRestResponse<>(resultList, metadataMap);
+                    response = getGenericRestResponse(resultList,HttpStatus.OK.toString(), "");
 
-            logger.debug("response:"+response.toString());
+            logger.debug("response:"+response);
             return response;
 
         }catch(ResponseStatusException rse) {
             rse.printStackTrace();
             httpServletResponse.setStatus(rse.getStatus().value());
-            return getGenericRestResponse(metadataMap, rse.getMessage(), rse.getStatus().value());
+            return getGenericErrorRestResponse(rse.getMessage(), rse.getStatus().value());
 
         }catch (Exception e){
             e.printStackTrace();
             httpServletResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
-            return getGenericRestResponse(metadataMap, e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value());
+            return getGenericErrorRestResponse(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value());
         }
     }
 
@@ -159,16 +154,12 @@ public class RewardPointsController {
             @PathVariable("period") Optional<String> period){
 
         logger.info(httpServletRequest.getMethod() + ":" + httpServletRequest.getRequestURI());
-        logger.debug("Params:[clienteId:"+clientId+",period:"+period+"]");
-
-        HashMap<String, String> metadataMap = new HashMap<>();
-        metadataMap.put(API_VERSION, API_V);
-        metadataMap.put(REQUEST_DATE,new Date().toString());
+        logger.debug("Params:[clientId:"+clientId+",period:"+period+"]");
 
         ArrayList<? extends RewardPointsResponse> resultList = null;
-
+        String errorMessage = "";
         try {
-            if (!clientId.isPresent() && !period.isPresent()) {
+            if (period.isEmpty()) {
                 logger.info("Requested reward points without parameters, assuming all as default");
                 resultList = rewardPointsService.getAllRewardPoints();
             } else {
@@ -181,7 +172,6 @@ public class RewardPointsController {
                 }
 
                 String periodVal = period.orElse("default").toUpperCase();
-                metadataMap.put(POINTS_PERIOD,periodVal);
 
                 switch (periodVal) {
                     case "MONTHLY":
@@ -189,12 +179,13 @@ public class RewardPointsController {
                         resultList = rewardPointsService.getRewardPointsByClientMonthly(clientId.get());
                         logger.debug("resultList:" + resultList.toString());
                         break;
-                    case "TOTAL":
+
                     default:
+                        errorMessage = "period param: Expected [MONTHLY|TOTAL] assumed default TOTAL";
+                    case "TOTAL":
                         logger.info("Requested default total reward points by client");
                         resultList = rewardPointsService.getRewardPointsByClientTotal(clientId.get());
                         logger.debug("resultList:" + resultList.toString());
-                        metadataMap.put(POINTS_PERIOD,"Expected [MONTHLY|TOTAL] assumed default TOTAL");
                         break;
                 }
             }
@@ -206,10 +197,8 @@ public class RewardPointsController {
                 );
             }
 
-            metadataMap.put(HTTP_RESPONSE,String.valueOf(HttpStatus.OK.value()));
-
             GenericRestResponse<? extends RewardPointsResponse>
-                    response = new GenericRestResponse<>(resultList, metadataMap);
+                    response = getGenericRestResponse(resultList,HttpStatus.OK.toString(), errorMessage);
 
             logger.debug("response:"+response.toString());
             return response;
@@ -217,27 +206,31 @@ public class RewardPointsController {
         }catch(ResponseStatusException rse) {
             rse.printStackTrace();
             httpServletResponse.setStatus(rse.getStatus().value());
-            return getGenericRestResponse(metadataMap, rse.getMessage(), rse.getStatus().value());
+            return getGenericErrorRestResponse(rse.getMessage(), rse.getStatus().value());
 
         }catch (Exception e){
             e.printStackTrace();
             httpServletResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
-            return getGenericRestResponse(metadataMap, e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value());
+            return getGenericErrorRestResponse(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value());
         }
     }
 
-    private GenericRestResponse<? extends RewardPointsResponse> getGenericRestResponse
-            (HashMap<String, String> metadataMap, String exMessage, Integer errorCode) {
-        metadataMap.put(HTTP_RESPONSE, errorCode.toString());
-        metadataMap.put(ERROR_MESSAGE, exMessage);
-        GenericRestResponse<? extends RewardPointsResponse>
-                response = new GenericRestResponse<>(null, metadataMap);
-        logger.error(exMessage);
-        logger.debug("response:"+response.toString());
+    private GenericRestResponse<RewardPointsResponse> getGenericRestResponse
+            (ArrayList<? extends RewardPointsResponse> resultList, String responseCode, String errorMessage) {
+        GenericRestResponse<RewardPointsResponse>
+                response = new GenericRestResponse<>(
+                (ArrayList<RewardPointsResponse>) resultList, new GenericRestResponse.GenericMetadata(
+                API_V, new Date(), responseCode, errorMessage)
+        );
+        logger.error(errorMessage);
+        logger.debug("response:"+response);
         return response;
     }
 
+    private GenericRestResponse<RewardPointsResponse> getGenericErrorRestResponse
+            (String exMessage, Integer errorCode) {
 
-
+        return getGenericRestResponse(new ArrayList<>(), errorCode.toString(), exMessage);
+    }
 
 }

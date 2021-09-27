@@ -20,20 +20,15 @@ import org.springframework.web.server.ResponseStatusException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Optional;
-
-import static com.overactive.java.assessment.response.ResponseMetadata.*;
+import java.util.*;
 
 @RestController
 @RequestMapping(path = "api/v1/transactions")
 public class TransactionController {
 
-    private static Logger logger = LoggerFactory.getLogger(TransactionController.class);
+    private static final Logger logger = LoggerFactory.getLogger(TransactionController.class);
     private static final String API_V = "v1";
-    private static TransactionServiceImpl transactionService;
+    private final TransactionServiceImpl transactionService;
 
     @Autowired
     public TransactionController(
@@ -41,28 +36,14 @@ public class TransactionController {
         this.transactionService = transactionService;
     }
 
-    private GenericRestResponse<? extends TransactionResponse> getGenericErrorRestResponse
-            (HashMap<String, String> metadataMap, String exMessage, Integer errorCode) {
-        metadataMap.put(HTTP_RESPONSE, errorCode.toString());
-        metadataMap.put(ERROR_MESSAGE, exMessage);
-        GenericRestResponse<? extends TransactionResponse>
-                response = new GenericRestResponse<>(null, metadataMap);
-        logger.error(exMessage);
-        logger.debug("response:"+response.toString());
-        return response;
-    }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public final GenericRestResponse<? extends TransactionResponse> handleValidationExceptions
             (Exception ex, WebRequest request) {
-        HashMap<String, String> metadataMap = new HashMap<>();
 
-        GenericRestResponse<? extends TransactionResponse>
-                response =
-        getGenericErrorRestResponse(metadataMap, ex.getMessage(), HttpStatus.BAD_REQUEST.value());
-
-        return response;
+        return getGenericErrorRestResponse(ex.getMessage(), HttpStatus.BAD_REQUEST.value());
     }
+
 
     @GetMapping(produces=MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Get all transaction",
@@ -73,12 +54,7 @@ public class TransactionController {
 
         logger.info(httpServletRequest.getMethod() + ":" + httpServletRequest.getRequestURI());
 
-        HashMap<String, String> metadataMap = new HashMap<>();
-        metadataMap.put(API_VERSION, API_V);
-        metadataMap.put(REQUEST_DATE,new Date().toString());
-
-
-        ArrayList<? extends TransactionResponse> resultList;
+        ArrayList<TransactionResponseForRewards> resultList;
         try {
 
             logger.info("Get transactions");
@@ -92,24 +68,23 @@ public class TransactionController {
                 );
             }
 
-            metadataMap.put(HTTP_RESPONSE, String.valueOf(HttpStatus.OK.value()));
-
             GenericRestResponse<? extends TransactionResponse>
-                    response = new GenericRestResponse<>(resultList, metadataMap);
+                    response = getGenericRestResponse(resultList, HttpStatus.OK.toString(), "");
 
-            logger.debug("response:"+response.toString());
+            logger.debug("response:"+response);
             return response;
         }catch(ResponseStatusException rse) {
             rse.printStackTrace();
             httpServletResponse.setStatus(rse.getStatus().value());
-            return getGenericErrorRestResponse(metadataMap, rse.getMessage(), rse.getStatus().value());
+            return getGenericErrorRestResponse(rse.getMessage(), rse.getStatus().value());
 
         }catch (Exception e){
             e.printStackTrace();
             httpServletResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
-            return getGenericErrorRestResponse(metadataMap, e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value());
+            return getGenericErrorRestResponse(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value());
         }
     }
+
 
     @GetMapping(value= "/{tranId}", produces=MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Get transaction",
@@ -118,15 +93,11 @@ public class TransactionController {
     public GenericRestResponse<? extends TransactionResponse> getTransaction(
             HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse,
             @ApiParam(value = "Transaction identification", required = true)
-            @PathVariable("tranId") Optional<Long> transactionId){
+            @PathVariable("tranId") Long transactionId){
 
         logger.info(httpServletRequest.getMethod() + ":" + httpServletRequest.getRequestURI());
 
-        HashMap<String, String> metadataMap = new HashMap<>();
-        metadataMap.put(API_VERSION, API_V);
-        metadataMap.put(REQUEST_DATE,new Date().toString());
-
-        ArrayList<? extends TransactionResponse> resultList;
+        ArrayList<TransactionResponseForRewards> resultList;
         try {
 
             logger.info("Get transaction by id: " + transactionId);
@@ -140,22 +111,20 @@ public class TransactionController {
                 );
             }
 
-            metadataMap.put(HTTP_RESPONSE, String.valueOf(HttpStatus.OK.value()));
-
             GenericRestResponse<? extends TransactionResponse>
-                    response = new GenericRestResponse<>(resultList, metadataMap);
+                    response = getGenericRestResponse(resultList, HttpStatus.OK.toString(), "");
 
-            logger.debug("response:"+response.toString());
+            logger.debug("response:"+response);
             return response;
         }catch(ResponseStatusException rse) {
             rse.printStackTrace();
             httpServletResponse.setStatus(rse.getStatus().value());
-            return getGenericErrorRestResponse(metadataMap, rse.getMessage(), rse.getStatus().value());
+            return getGenericErrorRestResponse(rse.getMessage(), rse.getStatus().value());
 
         }catch (Exception e){
             e.printStackTrace();
             httpServletResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
-            return getGenericErrorRestResponse(metadataMap, e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value());
+            return getGenericErrorRestResponse(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value());
         }
     }
 
@@ -172,33 +141,28 @@ public class TransactionController {
         transaction.setDate(new Date());
         logger.debug("Transaction:" + transaction);
 
-        HashMap<String, String> metadataMap = new HashMap<>();
-        metadataMap.put(API_VERSION, API_V);
-        metadataMap.put(REQUEST_DATE,new Date().toString());
 
         try {
             logger.info("Save transaction: " + transaction);
-            ArrayList<? extends TransactionResponse> resultList
+            ArrayList<TransactionResponseForRewards> resultList
                 = transactionService.saveTransaction(transaction);
             logger.debug("resultList:" + resultList.toString());
 
-            metadataMap.put(HTTP_RESPONSE, String.valueOf(HttpStatus.OK.value()));
-
             GenericRestResponse<? extends TransactionResponse>
-                    response = new GenericRestResponse<>(resultList, metadataMap);
+                    response = getGenericRestResponse(resultList, HttpStatus.CREATED.toString(), "");
 
             httpServletResponse.setStatus(HttpStatus.CREATED.value());
-            logger.debug("response:"+response.toString());
+            logger.debug("response:"+response);
             return response;
         }catch(ResponseStatusException rse) {
             rse.printStackTrace();
             httpServletResponse.setStatus(rse.getStatus().value());
-            return getGenericErrorRestResponse(metadataMap, rse.getMessage(), rse.getStatus().value());
+            return getGenericErrorRestResponse(rse.getMessage(), rse.getStatus().value());
 
         }catch (Exception e){
             e.printStackTrace();
             httpServletResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
-            return getGenericErrorRestResponse(metadataMap, e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value());
+            return getGenericErrorRestResponse(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value());
         }
     }
 
@@ -213,11 +177,7 @@ public class TransactionController {
 
         logger.info(httpServletRequest.getMethod() + ":" + httpServletRequest.getRequestURI());
 
-        HashMap<String, String> metadataMap = new HashMap<>();
-        metadataMap.put(API_VERSION, API_V);
-        metadataMap.put(REQUEST_DATE,new Date().toString());
-
-        ArrayList<? extends TransactionResponse> resultList;
+        ArrayList<TransactionResponseForRewards> resultList;
 
         try {
 
@@ -230,22 +190,20 @@ public class TransactionController {
             logger.info("Remove transaction by id: " + transactionId);
             resultList = transactionService.removeTransaction(transactionId.get());
 
-            metadataMap.put(HTTP_RESPONSE, String.valueOf(HttpStatus.OK.value()));
-
             GenericRestResponse<? extends TransactionResponse>
-                    response = new GenericRestResponse<>(resultList, metadataMap);
+                    response = getGenericRestResponse(resultList, HttpStatus.OK.toString(), "");
 
-            logger.debug("response:"+response.toString());
+            logger.debug("response:"+response);
             return response;
         }catch(ResponseStatusException rse) {
             rse.printStackTrace();
             httpServletResponse.setStatus(rse.getStatus().value());
-            return getGenericErrorRestResponse(metadataMap, rse.getMessage(), rse.getStatus().value());
+            return getGenericErrorRestResponse(rse.getMessage(), rse.getStatus().value());
 
         }catch (Exception e){
             e.printStackTrace();
             httpServletResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
-            return getGenericErrorRestResponse(metadataMap, e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value());
+            return getGenericErrorRestResponse(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value());
         }
     }
 
@@ -260,11 +218,7 @@ public class TransactionController {
 
         logger.info(httpServletRequest.getMethod() + ":" + httpServletRequest.getRequestURI());
 
-        HashMap<String, String> metadataMap = new HashMap<>();
-        metadataMap.put(API_VERSION, API_V);
-        metadataMap.put(REQUEST_DATE,new Date().toString());
-
-        ArrayList<? extends TransactionResponse> resultList;
+        ArrayList<TransactionResponseForRewards> resultList;
 
         try {
 
@@ -277,22 +231,39 @@ public class TransactionController {
             logger.info("Edit transaction: " + transaction);
             resultList = transactionService.editTransaction(transaction);
 
-            metadataMap.put(HTTP_RESPONSE, String.valueOf(HttpStatus.OK.value()));
+            GenericRestResponse<TransactionResponseForRewards>
+                    response = getGenericRestResponse(resultList, HttpStatus.OK.toString(), "");
 
-            GenericRestResponse<? extends TransactionResponse>
-                    response = new GenericRestResponse<>(resultList, metadataMap);
-
-            logger.debug("response:"+response.toString());
+            logger.debug("response:"+response);
             return response;
         }catch(ResponseStatusException rse) {
             rse.printStackTrace();
             httpServletResponse.setStatus(rse.getStatus().value());
-            return getGenericErrorRestResponse(metadataMap, rse.getMessage(), rse.getStatus().value());
+            return getGenericErrorRestResponse(rse.getMessage(), rse.getStatus().value());
 
         }catch (Exception e){
             e.printStackTrace();
             httpServletResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
-            return getGenericErrorRestResponse(metadataMap, e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value());
+            return getGenericErrorRestResponse(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value());
         }
+    }
+
+    private GenericRestResponse<TransactionResponseForRewards> getGenericRestResponse(
+            ArrayList<TransactionResponseForRewards> resultList, String responseCode, String errorMessage) {
+        GenericRestResponse<TransactionResponseForRewards>
+                response = new GenericRestResponse<>(
+                resultList, new GenericRestResponse.GenericMetadata(
+                API_V, new Date(), responseCode, errorMessage)
+        );
+        logger.error(errorMessage);
+        logger.debug("response:"+response);
+        return response;
+    }
+
+    private GenericRestResponse<? extends TransactionResponse> getGenericErrorRestResponse
+            (String exMessage, Integer errorCode) {
+
+        return getGenericRestResponse(new ArrayList<>(), errorCode.toString(), exMessage);
+
     }
 }

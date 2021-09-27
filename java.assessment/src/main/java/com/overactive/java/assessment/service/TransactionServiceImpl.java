@@ -37,7 +37,7 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public List<TransactionResponseForRewards> findAllApplicableTransactionsByClient(String clientid) {
+    public ArrayList<TransactionResponseForRewards> findAllApplicableTransactionsByClient(String clientid) {
         logger.debug("Getting all applicable transactions by client " + clientid);
         return transactionRepository.findTransactionByClientIdAndApplicable(clientid, Boolean.TRUE)
                 .stream()
@@ -56,10 +56,10 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public ArrayList<TransactionResponseForRewards> findTransaction(Optional<Long> transactionId)
+    public ArrayList<TransactionResponseForRewards> findTransaction(Long transactionId)
             throws ResponseStatusException{
         logger.debug("Getting transactions with id " + transactionId);
-        Optional<Transaction> t = transactionRepository.findById(transactionId.get());
+        Optional<Transaction> t = transactionRepository.findById(transactionId);
         if(!t.isPresent()){
             logger.debug("No transactions with id " + transactionId);
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Transaction not found: " + transactionId);
@@ -70,7 +70,7 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public ArrayList<TransactionResponseForRewards> removeTransaction(Long transactionId) {
+    public ArrayList<TransactionResponseForRewards> removeTransaction(Long transactionId) throws ResponseStatusException{
         logger.debug("Removing transactions with id " + transactionId);
         Optional<Transaction> t = transactionRepository.findById(transactionId);
         if(!t.isPresent()){

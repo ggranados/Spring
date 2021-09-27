@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.ToString;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 
 @Getter
@@ -15,10 +16,28 @@ public class GenericRestResponse<T> {
     private final ArrayList<T> data;
 
     @ApiModelProperty(value = "Response metadata")
-    private final HashMap<String, String> meta;
+    private final GenericMetadata meta;
 
-    public GenericRestResponse(ArrayList<T> list, HashMap<String, String> meta) {
+    public GenericRestResponse(ArrayList<T> list, GenericMetadata meta) {
         this.data = list;
         this.meta = meta;
     }
+
+
+    @Getter
+    @ToString
+    public static class GenericMetadata{
+        private String apiVersion;
+        private Date responseTime;
+        private String responseCode;
+        private String errorMessage;
+
+        public GenericMetadata(String apiVersion, Date responseTime, String responseCode, String errorMessage) {
+            this.apiVersion = apiVersion;
+            this.responseTime = responseTime;
+            this.responseCode = responseCode;
+            this.errorMessage = errorMessage;
+        }
+    }
+
 }

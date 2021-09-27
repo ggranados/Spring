@@ -13,10 +13,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import static org.mockito.Mockito.*;
 import static com.overactive.java.assessment.service.TestData.*;
+import static org.junit.jupiter.api.Assertions.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.ArrayList;
 
-import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
 class RewardPointsServiceImplTest {

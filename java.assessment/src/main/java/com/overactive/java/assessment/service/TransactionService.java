@@ -15,10 +15,11 @@ public interface TransactionService {
 
     ArrayList<TransactionResponseForRewards> saveTransaction(Transaction transaction);
 
-    ArrayList<TransactionResponseForRewards> findTransaction(Optional<Long> transactionId)
+    ArrayList<TransactionResponseForRewards> findTransaction(Long transactionId)
             throws ResponseStatusException;
 
-    ArrayList<TransactionResponseForRewards> removeTransaction(Long transactionId);
+    ArrayList<TransactionResponseForRewards> removeTransaction(Long transactionId)
+            throws ResponseStatusException;
 
     ArrayList<TransactionResponseForRewards> editTransaction(Transaction transaction);
 }

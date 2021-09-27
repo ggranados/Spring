@@ -22,7 +22,7 @@ public class SwaggerConfig {
                 .select()
                 .apis(
                         RequestHandlerSelectors
-                        .basePackage("com.overactive.java.assessment"))
+                        .basePackage("com.overactive.java.assessment.controller"))
                 .paths(PathSelectors.any())
                 .build()
                 .apiInfo(apiDetails());
