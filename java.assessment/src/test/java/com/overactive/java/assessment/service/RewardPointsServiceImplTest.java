@@ -5,7 +5,7 @@ import com.overactive.java.assessment.components.RewardPoints2PointsCalculator;
 
 import com.overactive.java.assessment.response.MonthlyRewardPointsResponse;
 import com.overactive.java.assessment.response.TotalRewardPointsResponse;
-import com.overactive.java.assessment.response.TransactionResponse;
+import com.overactive.java.assessment.response.TransactionResponseForRewards;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -36,8 +36,8 @@ class RewardPointsServiceImplTest {
 
     @Test
     void getRewardPointsByClientMonthly() {
-        ArrayList<TransactionResponse> data = new ArrayList<>();
-        data.add(new TransactionResponse(trxApplicableForBoth));
+        ArrayList<TransactionResponseForRewards> data = new ArrayList<>();
+        data.add(new TransactionResponseForRewards(trxApplicableForBoth));
 
         when(tranService.findAllApplicableTransactionsByClient("CLI001")).thenReturn(data);
         when(_1point.calculate(trxApplicableForBoth.getAmount())).thenReturn(50L);
@@ -59,8 +59,8 @@ class RewardPointsServiceImplTest {
     @Test
     @DisplayName("Service should return a list of Rewards Points with all applicable results")
     void getAllRewardPoints() {
-        ArrayList<TransactionResponse> data = new ArrayList<>();
-        data.add(new TransactionResponse(trxApplicableForBoth));
+        ArrayList<TransactionResponseForRewards> data = new ArrayList<>();
+        data.add(new TransactionResponseForRewards(trxApplicableForBoth));
 
         when(tranService.findAll()).thenReturn(data);
         when(_1point.calculate(trxApplicableForBoth.getAmount())).thenReturn(50L);
@@ -82,8 +82,8 @@ class RewardPointsServiceImplTest {
     @Test
     @DisplayName("Service should return a list of Rewards Points with results for CLI001 and 90 points")
     void getRewardPointsByClientTotal() {
-        ArrayList<TransactionResponse> data = new ArrayList<>();
-        data.add(new TransactionResponse(trxApplicableForBoth));
+        ArrayList<TransactionResponseForRewards> data = new ArrayList<>();
+        data.add(new TransactionResponseForRewards(trxApplicableForBoth));
 
         when(tranService.findAllApplicableTransactionsByClient("CLI001")).thenReturn(data);
         when(_1point.calculate(trxApplicableForBoth.getAmount())).thenReturn(50L);

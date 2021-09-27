@@ -2,7 +2,7 @@ package com.overactive.java.assessment.service;
 
 import com.overactive.java.assessment.entity.Transaction;
 import com.overactive.java.assessment.repository.TransactionRepository;
-import com.overactive.java.assessment.response.TransactionResponse;
+import com.overactive.java.assessment.response.TransactionResponseForRewards;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,35 +28,35 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public ArrayList<TransactionResponse> findAll() {
+    public ArrayList<TransactionResponseForRewards> findAll() {
         logger.debug("Getting all transactions");
         return transactionRepository.findAll()
                 .stream()
-                .map(t -> new TransactionResponse(t))
+                .map(t -> new TransactionResponseForRewards(t))
                 .collect(Collectors.toCollection(ArrayList::new));
     }
 
     @Override
-    public List<TransactionResponse> findAllApplicableTransactionsByClient(String clientid) {
+    public List<TransactionResponseForRewards> findAllApplicableTransactionsByClient(String clientid) {
         logger.debug("Getting all applicable transactions by client " + clientid);
         return transactionRepository.findTransactionByClientIdAndApplicable(clientid, Boolean.TRUE)
                 .stream()
-                .map(t -> new TransactionResponse(t))
+                .map(t -> new TransactionResponseForRewards(t))
                 .collect(Collectors.toCollection(ArrayList::new));
     }
 
 
     @Override
-    public ArrayList<TransactionResponse> saveTransaction(Transaction transaction) {
+    public ArrayList<TransactionResponseForRewards> saveTransaction(Transaction transaction) {
         logger.debug("Saving transaction " + transaction);
-        ArrayList<TransactionResponse> list = new ArrayList<>();
+        ArrayList<TransactionResponseForRewards> list = new ArrayList<>();
         Transaction t = transactionRepository.save(transaction);
-        list.add(new TransactionResponse(t));
+        list.add(new TransactionResponseForRewards(t));
         return list;
     }
 
     @Override
-    public ArrayList<? extends TransactionResponse> findTransaction(Optional<Long> transactionId)
+    public ArrayList<TransactionResponseForRewards> findTransaction(Optional<Long> transactionId)
             throws ResponseStatusException{
         logger.debug("Getting transactions with id " + transactionId);
         Optional<Transaction> t = transactionRepository.findById(transactionId.get());
@@ -64,13 +64,13 @@ public class TransactionServiceImpl implements TransactionService {
             logger.debug("No transactions with id " + transactionId);
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Transaction not found: " + transactionId);
         }
-        ArrayList<TransactionResponse> list = new ArrayList<>();
-        list.add(new TransactionResponse(t.get()));
+        ArrayList<TransactionResponseForRewards> list = new ArrayList<>();
+        list.add(new TransactionResponseForRewards(t.get()));
         return list;
     }
 
     @Override
-    public ArrayList<? extends TransactionResponse> removeTransaction(Long transactionId) {
+    public ArrayList<TransactionResponseForRewards> removeTransaction(Long transactionId) {
         logger.debug("Removing transactions with id " + transactionId);
         Optional<Transaction> t = transactionRepository.findById(transactionId);
         if(!t.isPresent()){
@@ -83,7 +83,7 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public ArrayList<? extends TransactionResponse> editTransaction(Transaction transaction) {
+    public ArrayList<TransactionResponseForRewards> editTransaction(Transaction transaction) {
         logger.debug("Editing transactions with id " + transaction);
         Optional<Transaction> t = transactionRepository.findById(transaction.getId());
         if(!t.isPresent()){
@@ -92,8 +92,8 @@ public class TransactionServiceImpl implements TransactionService {
         }
         transactionRepository.save(transaction);
 
-        ArrayList<TransactionResponse> list = new ArrayList<>();
-        list.add(new TransactionResponse(t.get()));
+        ArrayList<TransactionResponseForRewards> list = new ArrayList<>();
+        list.add(new TransactionResponseForRewards(t.get()));
         return list;
     }
 }

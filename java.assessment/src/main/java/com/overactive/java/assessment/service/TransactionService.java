@@ -1,7 +1,7 @@
 package com.overactive.java.assessment.service;
 
 import com.overactive.java.assessment.entity.Transaction;
-import com.overactive.java.assessment.response.TransactionResponse;
+import com.overactive.java.assessment.response.TransactionResponseForRewards;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
@@ -9,16 +9,16 @@ import java.util.List;
 import java.util.Optional;
 
 public interface TransactionService {
-    ArrayList<TransactionResponse> findAll();
+    ArrayList<TransactionResponseForRewards> findAll();
 
-    List<TransactionResponse> findAllApplicableTransactionsByClient(String clientid);
+    List<TransactionResponseForRewards> findAllApplicableTransactionsByClient(String clientid);
 
-    ArrayList<TransactionResponse> saveTransaction(Transaction transaction);
+    ArrayList<TransactionResponseForRewards> saveTransaction(Transaction transaction);
 
-    ArrayList<? extends TransactionResponse> findTransaction(Optional<Long> transactionId)
+    ArrayList<TransactionResponseForRewards> findTransaction(Optional<Long> transactionId)
             throws ResponseStatusException;
 
-    ArrayList<? extends TransactionResponse> removeTransaction(Long transactionId);
+    ArrayList<TransactionResponseForRewards> removeTransaction(Long transactionId);
 
-    ArrayList<? extends TransactionResponse> editTransaction(Transaction transaction);
+    ArrayList<TransactionResponseForRewards> editTransaction(Transaction transaction);
 }

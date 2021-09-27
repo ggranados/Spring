@@ -3,6 +3,7 @@ package com.overactive.java.assessment.controller;
 import com.overactive.java.assessment.entity.Transaction;
 import com.overactive.java.assessment.response.GenericRestResponse;
 import com.overactive.java.assessment.response.TransactionResponse;
+import com.overactive.java.assessment.response.TransactionResponseForRewards;
 import com.overactive.java.assessment.service.TransactionServiceImpl;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -66,7 +67,7 @@ public class TransactionController {
     @GetMapping(produces=MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Get all transaction",
             notes = "Gets all transactions persisted",
-            response = TransactionResponse.class)
+            response = TransactionResponseForRewards.class)
     public GenericRestResponse<? extends TransactionResponse> getAllTransactions(
             HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse){
 
@@ -113,7 +114,7 @@ public class TransactionController {
     @GetMapping(value= "/{tranId}", produces=MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Get transaction",
             notes = "Get transaction by ID",
-            response = TransactionResponse.class)
+            response = TransactionResponseForRewards.class)
     public GenericRestResponse<? extends TransactionResponse> getTransaction(
             HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse,
             @ApiParam(value = "Transaction identification", required = true)
@@ -251,7 +252,7 @@ public class TransactionController {
     @PutMapping(consumes=MediaType.APPLICATION_JSON_VALUE, produces=MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Edit transaction by ID",
             notes = "Edits a persisted transaction",
-            response = TransactionResponse.class)
+            response = TransactionResponseForRewards.class)
     public GenericRestResponse<? extends TransactionResponse> editTransaction(
             HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse,
             @ApiParam(value = "Transaction data", required = true)
