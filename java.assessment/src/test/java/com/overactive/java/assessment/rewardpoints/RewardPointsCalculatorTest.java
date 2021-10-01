@@ -5,7 +5,6 @@ import com.overactive.java.assessment.components.RewardPoints2PointsCalculator;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.test.context.TestPropertySource;
 
 import java.math.BigDecimal;
 

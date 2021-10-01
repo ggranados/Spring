@@ -5,7 +5,6 @@ import com.overactive.java.assessment.response.GenericRestResponse;
 import com.overactive.java.assessment.response.TransactionResponse;
 import com.overactive.java.assessment.response.TransactionResponseForRewards;
 import com.overactive.java.assessment.service.TransactionService;
-import com.overactive.java.assessment.service.TransactionServiceImpl;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.slf4j.Logger;
