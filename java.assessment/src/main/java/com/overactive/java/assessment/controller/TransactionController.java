@@ -4,6 +4,7 @@ import com.overactive.java.assessment.entity.Transaction;
 import com.overactive.java.assessment.response.GenericRestResponse;
 import com.overactive.java.assessment.response.TransactionResponse;
 import com.overactive.java.assessment.response.TransactionResponseForRewards;
+import com.overactive.java.assessment.service.TransactionService;
 import com.overactive.java.assessment.service.TransactionServiceImpl;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -28,11 +29,11 @@ public class TransactionController {
 
     private static final Logger logger = LoggerFactory.getLogger(TransactionController.class);
     private static final String API_V = "v1";
-    private final TransactionServiceImpl transactionService;
+    private final TransactionService transactionService;
 
     @Autowired
     public TransactionController(
-            TransactionServiceImpl transactionService) {
+            TransactionService transactionService) {
         this.transactionService = transactionService;
     }
 
