@@ -10,6 +10,10 @@ import org.springframework.graphql.data.method.annotation.SchemaMapping;
 import org.springframework.stereotype.Controller;
 import reactor.core.publisher.Flux;
 
+import java.util.ArrayList;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 @SpringBootApplication
 public class SpringGraphQlApplication {
 
@@ -28,6 +32,18 @@ class CustomerGraphqlController{
 		this.repository = repository;
 	}
 
+	@SchemaMapping (typeName = "Customer")
+	Flux<Order> orders (Customer customer){
+
+		// Data Fetcher | Resolver | Handler Method
+		var orders = Stream
+				.iterate(0,x -> x+1).limit(10)
+				.map(x-> new Order(Double.valueOf(Math.random()*100).intValue(),1))
+				.collect(Collectors.toCollection(ArrayList::new));
+
+		return Flux.fromIterable(orders);
+	}
+
 	@QueryMapping
 	Flux<Customer> customers (){
 		return this.repository.findAll();
@@ -35,6 +51,10 @@ class CustomerGraphqlController{
 }
 
 interface CustomerRepository extends ReactiveCrudRepository<Customer, Integer> {
+
+}
+
+record Order (Integer id, Integer customerId){
 
 }
 
