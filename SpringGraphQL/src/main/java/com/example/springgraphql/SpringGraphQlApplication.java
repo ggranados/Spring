@@ -28,7 +28,7 @@ class CustomerGraphqlController{
 		this.repository = repository;
 	}
 
-	@QueryMapping( name = "customers")
+	@QueryMapping
 	Flux<Customer> customers (){
 		return this.repository.findAll();
 	}
