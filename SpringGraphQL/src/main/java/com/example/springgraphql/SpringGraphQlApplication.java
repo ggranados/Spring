@@ -5,6 +5,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;
+import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.graphql.data.method.annotation.SchemaMapping;
 import org.springframework.stereotype.Controller;
@@ -45,13 +46,19 @@ class CustomerGraphqlController{
 	}
 
 	@QueryMapping
-	Flux<Customer> customers (){
+	Flux <Customer> customers (){
 		return this.repository.findAll();
+	}
+
+	@QueryMapping
+	Flux <Customer> customersByName(@Argument String name){
+		return repository.findByName(name);
 	}
 }
 
 interface CustomerRepository extends ReactiveCrudRepository<Customer, Integer> {
 
+		Flux <Customer> findByName(String name);
 }
 
 record Order (Integer id, Integer customerId){
