@@ -5,14 +5,12 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;
-import org.springframework.graphql.data.method.annotation.Argument;
-import org.springframework.graphql.data.method.annotation.MutationMapping;
-import org.springframework.graphql.data.method.annotation.QueryMapping;
-import org.springframework.graphql.data.method.annotation.SchemaMapping;
+import org.springframework.graphql.data.method.annotation.*;
 import org.springframework.stereotype.Controller;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -61,6 +59,24 @@ class CustomerGraphqlController{
 	Mono<Customer> addCustomer(@Argument String name){
 		return repository.save(new Customer(null, name));
 	}
+
+	@SubscriptionMapping
+	Flux<CustomerEvent> customerEvents(@Argument Integer customerId ){
+		return repository.findById(customerId)
+				.flatMapMany( customer -> {
+					var stream =
+							Stream.generate(
+									()-> new CustomerEvent(
+											customer,
+											Math.random() > 0.5 ?
+												CustomerEventType.DELETED :
+												CustomerEventType.UPDATED)
+							);
+					return Flux.fromStream(stream);
+				})
+				.delayElements(Duration.ofSeconds(1))
+				.take(10);
+	}
 }
 
 interface CustomerRepository extends ReactiveCrudRepository<Customer, Integer> {
@@ -75,5 +91,11 @@ record Order (Integer id, Integer customerId){
 record Customer (
 		@JsonProperty("cusId") @Id Integer id,
 		@JsonProperty("cusName") String name){
+
+}
+
+enum CustomerEventType {UPDATED, DELETED}
+
+record CustomerEvent (Customer customer, CustomerEventType event){
 
 }
