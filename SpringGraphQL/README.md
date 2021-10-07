@@ -5,7 +5,7 @@ Spring GraphQL project sample
 **Deploys onto:**
 http://localhost:8080/graphiql
 
-## Test queries
+## Queries
 
 ### Customers
 ```
@@ -49,5 +49,26 @@ mutation{
   }
 }
 ````
+
+## Subscriptions
+
+### Customer Events
+
+````
+subscription {
+  customerEvents(customerId: 2) {
+    customer {
+      id
+      name
+    }
+    event
+  }
+}
+
+````
+
+**WebSocket JavaScript Test Client at:**
+http://localhost:8080/index.html
+
 
 https://www.youtube.com/watch?v=kVSYVhmvNCI&ab_channel=SpringDeveloper
