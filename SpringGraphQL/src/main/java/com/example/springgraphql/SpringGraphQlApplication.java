@@ -6,10 +6,12 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 import org.springframework.graphql.data.method.annotation.Argument;
+import org.springframework.graphql.data.method.annotation.MutationMapping;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.graphql.data.method.annotation.SchemaMapping;
 import org.springframework.stereotype.Controller;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.util.ArrayList;
 import java.util.stream.Collectors;
@@ -46,13 +48,18 @@ class CustomerGraphqlController{
 	}
 
 	@QueryMapping
-	Flux <Customer> customers (){
+	Flux<Customer> customers (){
 		return this.repository.findAll();
 	}
 
 	@QueryMapping
-	Flux <Customer> customersByName(@Argument String name){
+	Flux<Customer> customersByName(@Argument String name){
 		return repository.findByName(name);
+	}
+
+	@MutationMapping
+	Mono<Customer> addCustomer(@Argument String name){
+		return repository.save(new Customer(null, name));
 	}
 }
 

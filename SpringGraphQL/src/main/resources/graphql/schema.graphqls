@@ -13,3 +13,7 @@ type Customer {
     name: String
     orders: [Order]
 }
+
+type Mutation{
+    addCustomer (name: String) : Customer
+}

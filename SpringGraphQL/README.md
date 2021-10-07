@@ -37,5 +37,17 @@ query customersByName{
   }
 }
 ```
+## Mutations
+
+### Add Customer
+
+````
+mutation{
+  addCustomer(name: "Pedro"){
+    id
+    name
+  }
+}
+````
 
 https://www.youtube.com/watch?v=kVSYVhmvNCI&ab_channel=SpringDeveloper
