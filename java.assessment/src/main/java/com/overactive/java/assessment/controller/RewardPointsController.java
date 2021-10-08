@@ -1,6 +1,9 @@
 package com.overactive.java.assessment.controller;
 
-import com.overactive.java.assessment.response.*;
+import com.overactive.java.assessment.response.GenericRestResponse;
+import com.overactive.java.assessment.response.MonthlyRewardPointsResponse;
+import com.overactive.java.assessment.response.RewardPointsResponse;
+import com.overactive.java.assessment.response.TotalRewardPointsResponse;
 import com.overactive.java.assessment.service.RewardPointsServiceImpl;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -11,25 +14,25 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.Optional;
 
-import static com.overactive.java.assessment.response.GenericRestResponse.*;
+import static com.overactive.java.assessment.response.GenericRestResponse.getGenericRestResponse;
 
 
 @RestController
 @RequestMapping(path = "api/v1/rewards")
 @Validated
-public class RewardPointsController {
+public class RewardPointsController extends GenericController{
 
     private static final Logger logger = LoggerFactory.getLogger(RewardPointsController.class);
-    private static final String API_V = "v1";
 
     private final RewardPointsServiceImpl rewardPointsService;
 
@@ -50,6 +53,7 @@ public class RewardPointsController {
         logger.info("Requested reward points without parameters, assuming all as default");
         resultList = rewardPointsService.getAllRewardPoints();
         logger.debug(resultList.toString());
+
         if (resultList.isEmpty()) {
             logger.error("Rewards points for client not found");
             throw new NotFoundException("Rewards points not found");
@@ -148,8 +152,8 @@ public class RewardPointsController {
 
         boolean noResultsFound = resultList == null || resultList.isEmpty();
         if (noResultsFound) {
-            logger.error("Rewards points for client: " + clientId + " not found");
-            throw new NotFoundException("Rewards points for client: " + clientId + " not found");
+            logger.error("Rewards points for client: " + clientId.get() + " not found");
+            throw new NotFoundException("Rewards points for client: " + clientId.get() + " not found");
         }
 
         var response =
@@ -160,24 +164,4 @@ public class RewardPointsController {
     }
 
 
-    @ExceptionHandler({MethodArgumentNotValidException.class})
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public final GenericRestResponse<?> handleValidationExceptions
-            (Exception ex, WebRequest request) {
-        return getGenericErrorRestResponse(ex.getMessage(), API_V, HttpStatus.BAD_REQUEST.value());
-    }
-
-    @ExceptionHandler({NotFoundException.class})
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public final GenericRestResponse<?> handleNotFoundExceptions
-            (Exception ex, WebRequest request) {
-        return getGenericErrorRestResponse(ex.getMessage(), API_V, HttpStatus.NOT_FOUND.value());
-    }
-
-    @ExceptionHandler({Exception.class})
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public final GenericRestResponse<?> handleUnknownExceptions
-            (Exception ex, WebRequest request) {
-        return getGenericErrorRestResponse(ex.getMessage(), API_V, HttpStatus.INTERNAL_SERVER_ERROR.value());
-    }
 }
