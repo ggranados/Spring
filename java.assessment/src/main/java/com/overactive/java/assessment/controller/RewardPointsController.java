@@ -24,7 +24,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.Optional;
 
-import static com.overactive.java.assessment.response.GenericRestResponse.getGenericRestResponse;
+import static com.overactive.java.assessment.response.GenericRestResponse.*;
 
 
 @RestController
