@@ -14,11 +14,12 @@ import org.springframework.web.client.RestTemplate;
 public class UserService {
 
     private final UserRepository repository;
-
+    private final RestTemplate restTemplate;
 
     @Autowired
-    public UserService(UserRepository repository) {
+    public UserService(UserRepository repository, RestTemplate restTemplate) {
         this.repository = repository;
+        this.restTemplate = restTemplate;
     }
 
     public User save(User user) {
@@ -26,5 +27,16 @@ public class UserService {
         return repository.save(user);
     }
 
+    public ResponseTemplateVO getUserWithDepartment(Long id) {
+        log.info("find user with department service");
 
+        ResponseTemplateVO vo = new ResponseTemplateVO();
+        User user = repository.findById(id).get();
+        Department department = restTemplate
+                .getForObject("http://localhost:9001/departments/" + user.getDepartmentId(), Department.class);
+
+        vo.setUser(user);
+        vo.setDepartment(department);
+        return vo;
+    }
 }
