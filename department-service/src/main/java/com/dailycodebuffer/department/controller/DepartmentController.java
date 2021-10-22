@@ -18,6 +18,11 @@ public class DepartmentController {
         this.service = service;
     }
 
+    @PostMapping("/")
+    public Department saveDepartment(@RequestBody Department department){
+        log.info("save department controller");
+        return service.save(department);
+    }
 
 
 }
