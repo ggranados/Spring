@@ -31,8 +31,16 @@ hystrix:
     fallbackcmd:
       execution:
         isolation:
+          strategy: semaphore
           thread:
             timeoutInMilliseconds: 4000
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+
 eureka:
   client:
     register-with-eureka: true
