@@ -31,4 +31,9 @@ public class ReservationResource {
             @RequestBody  Mono<Reservation> reservation){
         return Mono.just("{}");
     }
+
+    @DeleteMapping(path = "{roomId}")
+    public Mono<Boolean> deleteReservation(@PathVariable String roomId){
+        return Mono.just(true);
+    }
 }
