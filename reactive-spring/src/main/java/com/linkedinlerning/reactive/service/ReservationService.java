@@ -1,6 +1,7 @@
 package com.linkedinlerning.reactive.service;
 
 import com.linkedinlerning.reactive.model.Reservation;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 public interface ReservationService {
@@ -12,4 +13,6 @@ public interface ReservationService {
     Mono<Reservation> updateReservation(String id, Mono<Reservation> reservation);
 
     Mono<Boolean> deleteReservation(String id);
+
+    Flux<Reservation> listAllReservations();
 }
