@@ -1,6 +1,6 @@
 ![SpringBoot](https://img.shields.io/badge/Spring_Boot-F2F4F9?style=for-the-badge&logo=spring-boot)
 
-Self trainning projects implementing SpringBoot
+Self-trainning projects implementing SpringBoot
 
 Each branch corresponding to a single project sample, identified by SpringBoot version 
 For example the branch:
