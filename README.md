@@ -13,3 +13,4 @@ Refers to an *API REST* to expose customer reward points implementing *SpringBoo
 
 Each project should have it's own related *README* file
 
+![SpringBoot](https://img.shields.io/badge/Spring_Boot-F2F4F9?style=for-the-badge&logo=spring-boot)
