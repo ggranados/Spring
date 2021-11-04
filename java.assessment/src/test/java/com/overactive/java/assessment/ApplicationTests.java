@@ -72,7 +72,7 @@ class ApplicationTests {
 				.andExpect(jsonPath("$.meta.responseTime").isNotEmpty())
 				.andExpect(jsonPath("$.meta.apiVersion", is("v1")))
 				.andExpect(jsonPath("$.meta.responseCode", is("404")))
-				.andExpect(jsonPath("$.meta.errorMessage", is("Rewards points for client:   not found")));
+				.andExpect(jsonPath("$.meta.errorMessage", is("Rewards points for client: Optional[ ] not found")));
 	}
 
 	@Test

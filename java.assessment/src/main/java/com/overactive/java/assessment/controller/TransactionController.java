@@ -1,5 +1,6 @@
 package com.overactive.java.assessment.controller;
 
+import com.overactive.java.assessment.dto.TransactionDTO;
 import com.overactive.java.assessment.entity.Transaction;
 import com.overactive.java.assessment.response.GenericRestResponse;
 import com.overactive.java.assessment.response.TransactionResponseForRewards;
@@ -98,16 +99,16 @@ public class TransactionController extends GenericController{
             HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse,
             @ApiParam(value = "Transaction data", required = true)
             @RequestBody @Valid
-                    Transaction transaction){
+                    TransactionDTO transactionDto){
 
         logRequest(httpServletRequest);
 
-        transaction.setDate(new Date());
-        logger.debug("Transaction: {}", transaction);
+        transactionDto.setDate(new Date());
+        logger.debug("Transaction: {}", transactionDto);
 
-        logger.info("Save transaction: {}",transaction);
+        logger.info("Save transaction: {}",transactionDto);
         var resultList =
-                transactionService.saveTransaction(transaction);
+                transactionService.saveTransaction(mapToEntity(transactionDto));
 
         var response =
                 getGenericRestResponse(resultList, API_V, HttpStatus.CREATED.toString(), "");
@@ -118,6 +119,17 @@ public class TransactionController extends GenericController{
             logResponse(response);
         }
         return response;
+    }
+
+    private Transaction mapToEntity(TransactionDTO transactionDto) {
+        var transaction = new Transaction();
+        transaction.setAmount(transactionDto.getAmount());
+        transaction.setDate(transactionDto.getDate());
+        transaction.setApplicable(transactionDto.getApplicable());
+        transaction.setClientId(transactionDto.getClientId());
+        transaction.setId(transactionDto.getId());
+
+        return transaction;
     }
 
     @DeleteMapping(value="/{tranId}", produces= MediaType.APPLICATION_JSON_VALUE)
@@ -155,7 +167,7 @@ public class TransactionController extends GenericController{
             HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse,
             @ApiParam(value = "Transaction data", required = true)
             @RequestBody @Valid
-                    Transaction transaction) throws NotFoundException {
+                    TransactionDTO transaction) throws NotFoundException {
 
         logRequest(httpServletRequest);
 
@@ -166,7 +178,7 @@ public class TransactionController extends GenericController{
 
         logger.info("Edit transaction: {}", transaction);
         var resultList =
-                transactionService.editTransaction(transaction);
+                transactionService.editTransaction(mapToEntity(transaction));
 
         var response =
                 getGenericRestResponse(resultList, API_V, HttpStatus.OK.toString(), "");

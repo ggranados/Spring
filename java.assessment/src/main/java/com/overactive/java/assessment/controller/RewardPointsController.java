@@ -108,7 +108,7 @@ public class RewardPointsController extends GenericController{
     }
 
     private String getNotFoundMsg(Optional<String> clientId) {
-        return "Rewards points for client: " + clientId.get() + " not found";
+        return "Rewards points for client: " + clientId + " not found";
     }
 
     @GetMapping(path = "clients/{clientId}/monthly", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -135,7 +135,7 @@ public class RewardPointsController extends GenericController{
         boolean noResultsFound = resultList == null || resultList.isEmpty();
         if (noResultsFound) {
             logger.error("Rewards points for client: {}  not found", clientId);
-            throw new NotFoundException("Rewards points for client: " + clientId + " not found");
+            throw new NotFoundException(getNotFoundMsg(clientId));
         }
 
         var response =
@@ -172,7 +172,7 @@ public class RewardPointsController extends GenericController{
         boolean noResultsFound = resultList == null || resultList.isEmpty();
         if (noResultsFound) {
             logger.error("Rewards points for client: {}  not found", clientId);
-            throw new NotFoundException("Rewards points for client: " + clientId + " not found");
+            throw new NotFoundException(getNotFoundMsg(clientId));
         }
 
         var response =
