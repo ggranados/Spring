@@ -1,6 +1,7 @@
 package com.overactive.java.assessment.controller;
 
 import com.overactive.java.assessment.response.GenericRestResponse;
+import com.overactive.java.assessment.response.RewardPointsResponse;
 import javassist.NotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -15,21 +16,21 @@ public class GenericController {
 
     @ExceptionHandler({MethodArgumentNotValidException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public final GenericRestResponse<?> handleValidationExceptions
+    public final GenericRestResponse<RewardPointsResponse> handleValidationExceptions
             (Exception ex, WebRequest request) {
         return getGenericErrorRestResponse(ex.getMessage(), API_V, HttpStatus.BAD_REQUEST.value());
     }
 
     @ExceptionHandler({NotFoundException.class})
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public final GenericRestResponse<?> handleNotFoundExceptions
+    public final GenericRestResponse<RewardPointsResponse> handleNotFoundExceptions
             (Exception ex, WebRequest request) {
         return getGenericErrorRestResponse(ex.getMessage(), API_V, HttpStatus.NOT_FOUND.value());
     }
 
     @ExceptionHandler({Exception.class})
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public final GenericRestResponse<?> handleUnknownExceptions
+    public final GenericRestResponse<RewardPointsResponse> handleUnknownExceptions
             (Exception ex, WebRequest request) {
         return getGenericErrorRestResponse(ex.getMessage(), API_V, HttpStatus.INTERNAL_SERVER_ERROR.value());
     }

@@ -1,7 +1,7 @@
 package com.overactive.java.assessment.service;
 
-import com.overactive.java.assessment.components.RewardPoints1PointsCalculator;
-import com.overactive.java.assessment.components.RewardPoints2PointsCalculator;
+import com.overactive.java.assessment.components.RewardPointsOnePointCalculator;
+import com.overactive.java.assessment.components.RewardPointsTwoPointsCalculator;
 
 import com.overactive.java.assessment.response.MonthlyRewardPointsResponse;
 import com.overactive.java.assessment.response.TotalRewardPointsResponse;
@@ -25,10 +25,10 @@ class RewardPointsServiceImplTest {
     TransactionServiceImpl tranService;
 
     @Mock
-    RewardPoints1PointsCalculator _1point;
+    RewardPointsOnePointCalculator _1point;
 
     @Mock
-    RewardPoints2PointsCalculator _2point;
+    RewardPointsTwoPointsCalculator _2point;
 
     @InjectMocks
     RewardPointsServiceImpl service;

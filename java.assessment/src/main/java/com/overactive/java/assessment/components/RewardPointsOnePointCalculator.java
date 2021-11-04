@@ -5,24 +5,22 @@ import lombok.Setter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
-
 import java.math.BigDecimal;
 
-@Component("_2PointsCalculator")
-@PropertySource("classpath:rewardpoints.properties")
+@Component("onePointsCalculator")
+@PropertySource("classpath:reward-points.properties")
 @Getter @Setter
-public class RewardPoints2PointsCalculator implements PointsCalculator{
+public class RewardPointsOnePointCalculator implements PointsCalculator{
 
-    @Value("${_2PointsCalculator.baseAmount}")
-    private String _2pointsBaseAmount;
+    @Value("${onePointsCalculator.baseAmount}")
+    private String onePointBaseAmount;
 
     @Override
     public Long calculate(BigDecimal amount){
-        BigDecimal baseAmount = new BigDecimal(_2pointsBaseAmount);
-        if(amount.compareTo(baseAmount) <= 0)
+        BigDecimal baseAmount = new BigDecimal(onePointBaseAmount);
+        if(amount.compareTo(baseAmount) < 0)
             return 0L;
-        return amount.subtract(baseAmount)
-                .multiply(new BigDecimal(2))
+        return baseAmount
                 .toBigInteger().longValue();
     }
 }

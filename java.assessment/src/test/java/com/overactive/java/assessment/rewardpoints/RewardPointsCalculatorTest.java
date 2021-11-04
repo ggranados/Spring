@@ -1,7 +1,7 @@
 package com.overactive.java.assessment.rewardpoints;
 
-import com.overactive.java.assessment.components.RewardPoints1PointsCalculator;
-import com.overactive.java.assessment.components.RewardPoints2PointsCalculator;
+import com.overactive.java.assessment.components.RewardPointsOnePointCalculator;
+import com.overactive.java.assessment.components.RewardPointsTwoPointsCalculator;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,15 +13,15 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class RewardPointsCalculatorTest {
 
-    private static RewardPoints1PointsCalculator rewardPoints1PointsCalculator;
-    private static RewardPoints2PointsCalculator rewardPoints2PointsCalculator;
+    private static RewardPointsOnePointCalculator rewardPoints1PointsCalculator;
+    private static RewardPointsTwoPointsCalculator rewardPoints2PointsCalculator;
 
     @BeforeAll
     private static void setUp(){
-        rewardPoints1PointsCalculator = new RewardPoints1PointsCalculator();
-        rewardPoints1PointsCalculator.set_1pointsBaseAmount("50");
-        rewardPoints2PointsCalculator = new RewardPoints2PointsCalculator();
-        rewardPoints2PointsCalculator.set_2pointsBaseAmount("100");
+        rewardPoints1PointsCalculator = new RewardPointsOnePointCalculator();
+        rewardPoints1PointsCalculator.setOnePointBaseAmount("50");
+        rewardPoints2PointsCalculator = new RewardPointsTwoPointsCalculator();
+        rewardPoints2PointsCalculator.setTwoPointsBaseAmount("100");
     }
 
     @Test

@@ -1,15 +1,14 @@
 package com.overactive.java.assessment.service;
 
-import com.overactive.java.assessment.components.RewardPoints2PointsCalculator;
+import com.overactive.java.assessment.components.RewardPointsTwoPointsCalculator;
 import com.overactive.java.assessment.response.MonthlyRewardPointsResponse;
 import com.overactive.java.assessment.response.TotalRewardPointsResponse;
-import com.overactive.java.assessment.components.RewardPoints1PointsCalculator;
+import com.overactive.java.assessment.components.RewardPointsOnePointCalculator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-
 import java.text.DateFormatSymbols;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -20,17 +19,17 @@ public class RewardPointsServiceImpl implements RewardPointsService {
     private static final Logger logger = LoggerFactory.getLogger(RewardPointsServiceImpl.class);
 
     private static TransactionServiceImpl transactionService;
-    private static RewardPoints1PointsCalculator rewardPoints1PointCalculator;
-    private static RewardPoints2PointsCalculator rewardPoints2PointCalculator;
+    private static RewardPointsOnePointCalculator rewardPointsOnePointCalculator;
+    private static RewardPointsTwoPointsCalculator rewardPointsTwoPointCalculator;
 
     @Autowired
     public RewardPointsServiceImpl(
             TransactionServiceImpl transactionService,
-            @Qualifier("_1PointsCalculator") RewardPoints1PointsCalculator rewardPoints1PointCalculator,
-            @Qualifier("_2PointsCalculator") RewardPoints2PointsCalculator rewardPoints2PointCalculator) {
+            @Qualifier("onePointsCalculator") RewardPointsOnePointCalculator rewardPoints1PointCalculator,
+            @Qualifier("twoPointsCalculator") RewardPointsTwoPointsCalculator rewardPoints2PointCalculator) {
         this.transactionService = transactionService;
-        this.rewardPoints1PointCalculator = rewardPoints1PointCalculator;
-        this.rewardPoints2PointCalculator = rewardPoints2PointCalculator;
+        this.rewardPointsOnePointCalculator = rewardPoints1PointCalculator;
+        this.rewardPointsTwoPointCalculator = rewardPoints2PointCalculator;
     }
 
     @Override
@@ -40,8 +39,8 @@ public class RewardPointsServiceImpl implements RewardPointsService {
                 .stream()
                 .map(t->{
                     String month = getMonthFromDate(t.getDate());
-                    Long points = rewardPoints1PointCalculator.calculate(t.getAmount());
-                    points += rewardPoints2PointCalculator.calculate(t.getAmount());
+                    Long points = rewardPointsOnePointCalculator.calculate(t.getAmount());
+                    points += rewardPointsTwoPointCalculator.calculate(t.getAmount());
                     return new MonthlyRewardPointsResponse(points,month);
                 })
                 .collect(
@@ -61,8 +60,8 @@ public class RewardPointsServiceImpl implements RewardPointsService {
                 .stream()
                 .map(t->{
                     String month = getMonthFromDate(t.getDate());
-                    Long points = rewardPoints2PointCalculator.calculate(t.getAmount());
-                    points += rewardPoints1PointCalculator.calculate(t.getAmount());
+                    Long points = rewardPointsTwoPointCalculator.calculate(t.getAmount());
+                    points += rewardPointsOnePointCalculator.calculate(t.getAmount());
                     return new TotalRewardPointsResponse(points,t.getClientId());
                 })
                 .collect(
@@ -81,8 +80,8 @@ public class RewardPointsServiceImpl implements RewardPointsService {
         return transactionService.findAllApplicableTransactionsByClient(clientId)
                 .stream()
                 .map(t->{
-                    Long points = rewardPoints2PointCalculator.calculate(t.getAmount());
-                    points += rewardPoints1PointCalculator.calculate(t.getAmount());
+                    Long points = rewardPointsTwoPointCalculator.calculate(t.getAmount());
+                    points += rewardPointsOnePointCalculator.calculate(t.getAmount());
                     return new TotalRewardPointsResponse(points,t.getClientId());
                 })
                 .collect(
