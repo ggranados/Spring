@@ -78,7 +78,7 @@ class ApplicationTests {
 	@Test
 	@DisplayName("Given ExistingClientId When RequestRewardsByClientMonthly Then ResponseClientRewards")
 	void givenExistingClientId_WhenRequestRewardsByClientMonthly_ThenResponseClientRewards() throws Exception {
-		mockMvc.perform(get("/api/v1/rewards/clients/CLI001/MONTHLY"))
+		mockMvc.perform(get("/api/v1/rewards/clients/CLI001/monthly"))
 				.andExpect(status().isOk())
 				.andExpect(content().contentType(MediaType.APPLICATION_JSON))
 				.andExpect(jsonPath("$.data").exists())
@@ -100,7 +100,7 @@ class ApplicationTests {
 	@Test
 	@DisplayName("Given ExistingClientId When RequestRewardsByClientTotal Then ResponseClientRewards")
 	void givenExistingClientId_WhenRequestRewardsByClientTotal_ThenResponseClientRewards() throws Exception {
-		mockMvc.perform(get("/api/v1/rewards/clients/CLI001/TOTAL"))
+		mockMvc.perform(get("/api/v1/rewards/clients/CLI001/total"))
 				.andExpect(status().isOk())
 				.andExpect(content().contentType(MediaType.APPLICATION_JSON))
 				.andExpect(jsonPath("$.data").exists())
@@ -117,30 +117,11 @@ class ApplicationTests {
 
 	}
 
-	@Test
-	@DisplayName("Given ExistingClientId When RequestRewardsByClientNoPeriod Then ResponseClientRewards")
-	void givenExistingClientId_WhenRequestRewardsByClientNoPeriod_ThenResponseClientRewards() throws Exception {
-		mockMvc.perform(get("/api/v1/rewards/clients/CLI001/ /"))
-				.andExpect(status().isOk())
-				.andExpect(content().contentType(MediaType.APPLICATION_JSON))
-				.andExpect(jsonPath("$.data").exists())
-				.andExpect(jsonPath("$.data").isNotEmpty())
-				.andExpect(jsonPath("$.data[0].points").exists())
-				.andExpect(jsonPath("$.data[0].points").isNumber())
-				.andExpect(jsonPath("$.data[0].points").isNotEmpty())
-				.andExpect(jsonPath("$.data[0].clientId", is("CLI001")))
-				.andExpect(jsonPath("$.meta").exists())
-				.andExpect(jsonPath("$.meta.responseTime").isNotEmpty())
-				.andExpect(jsonPath("$.meta.apiVersion", is("v1")))
-				.andExpect(jsonPath("$.meta.responseCode", is("200 OK")))
-				.andExpect(jsonPath("$.meta.errorMessage", is("period param: Expected [MONTHLY|TOTAL] assumed default TOTAL")));
-
-	}
 
 	@Test
 	@DisplayName("Given NoClientId When RequestRewardsByClientMonthly Then NotFound")
 	void givenNoClientId_WhenRequestRewardsByClientMonthly_NotFound() throws Exception {
-		mockMvc.perform(get("/api/v1/rewards/clients/ /MONTHLY"))
+		mockMvc.perform(get("/api/v1/rewards/clients/ /monthly"))
 				.andExpect(status().isNotFound())
 				.andExpect(content().contentType(MediaType.APPLICATION_JSON))
 				.andExpect(jsonPath("$.data").isEmpty())

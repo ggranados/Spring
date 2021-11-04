@@ -45,12 +45,12 @@ public class RewardPointsController extends GenericController{
 
     @GetMapping(path = "clients", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Get all reward points", notes = "Gets all applicable Reward Points by all clients", response = TotalRewardPointsResponse.class)
-    public GenericRestResponse<RewardPointsResponse> getRewardPointsByClients(
+    public GenericRestResponse<TotalRewardPointsResponse> getRewardPointsByClients(
             HttpServletRequest httpServletRequest) throws NotFoundException {
 
         logRequest(httpServletRequest);
 
-        ArrayList<? extends RewardPointsResponse> resultList;
+        ArrayList<TotalRewardPointsResponse> resultList;
 
         logger.info("Requested reward points without parameters, assuming all as default");
         resultList = rewardPointsService.getAllRewardPoints();
@@ -73,7 +73,7 @@ public class RewardPointsController extends GenericController{
 
     @GetMapping(path = "clients/{clientId}", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Get reward points by client", notes = "Gets reward points by client ID and period ID", response = TotalRewardPointsResponse.class)
-    public GenericRestResponse<RewardPointsResponse> getRewardPointsByClient(
+    public GenericRestResponse<TotalRewardPointsResponse> getRewardPointsByClient(
             HttpServletRequest httpServletRequest,
             @ApiParam(value = "Client identification", required = true)
             @PathVariable("clientId")
@@ -102,7 +102,7 @@ public class RewardPointsController extends GenericController{
                 getGenericRestResponse(resultList, API_V, HttpStatus.OK.toString(), "");
 
         if(logger.isDebugEnabled()){
-            logResults("resultList:" + resultList);
+            logResults(resultList.toString());
             logResponse(response);
         }
 
@@ -111,7 +111,7 @@ public class RewardPointsController extends GenericController{
 
     @GetMapping(path = "clients/{clientId}/{period}", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Get reward points by client ID and period ID", notes = "Gets all applicable Rewards Points by client and period, which can be monthly or total (as default)", response = MonthlyRewardPointsResponse.class)
-    public GenericRestResponse<RewardPointsResponse> getRewardPointsByClientByPeriod(
+    public GenericRestResponse<? extends RewardPointsResponse> getRewardPointsByClientByPeriod(
             HttpServletRequest httpServletRequest,
             @ApiParam(value = "Client identification", required = true)
             @PathVariable("clientId")
@@ -123,7 +123,7 @@ public class RewardPointsController extends GenericController{
         logRequest(httpServletRequest);
         logger.debug("Params:[clientId: {}, period: {} ]", clientId, period);
 
-        ArrayList<?> resultList = null;
+        ArrayList<? extends RewardPointsResponse> resultList = null;
         String errorMessage = "";
 
         boolean periodIsNotIndicated = period.isEmpty();
@@ -170,23 +170,13 @@ public class RewardPointsController extends GenericController{
                 getGenericRestResponse(resultList, API_V, HttpStatus.OK.toString(), errorMessage);
 
         if(logger.isDebugEnabled()){
-            logResults("resultList:" + resultList);
+            logResults(resultList.toString());
             logResponse(response);
         }
         return response;
     }
 
-    private void logResults(String s) {
-        logger.debug(s);
-    }
 
-    private void logRequest(HttpServletRequest httpServletRequest) {
-        logger.info("{} : {}.", httpServletRequest.getMethod(), httpServletRequest.getRequestURI());
-    }
-
-    private void logResponse(GenericRestResponse<RewardPointsResponse> response) {
-        logger.debug("response: {}", response);
-    }
 
 
 }

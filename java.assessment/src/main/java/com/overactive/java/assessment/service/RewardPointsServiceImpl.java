@@ -18,9 +18,9 @@ public class RewardPointsServiceImpl implements RewardPointsService {
 
     private static final Logger logger = LoggerFactory.getLogger(RewardPointsServiceImpl.class);
 
-    private static TransactionServiceImpl transactionService;
-    private static RewardPointsOnePointCalculator rewardPointsOnePointCalculator;
-    private static RewardPointsTwoPointsCalculator rewardPointsTwoPointCalculator;
+    private final TransactionServiceImpl transactionService;
+    private final RewardPointsOnePointCalculator rewardPointsOnePointCalculator;
+    private final RewardPointsTwoPointsCalculator rewardPointsTwoPointCalculator;
 
     @Autowired
     public RewardPointsServiceImpl(
@@ -34,7 +34,7 @@ public class RewardPointsServiceImpl implements RewardPointsService {
 
     @Override
     public ArrayList<MonthlyRewardPointsResponse> getRewardPointsByClientMonthly(String clientId) {
-        logger.debug("Getting reward points by client " + clientId + " monthly");
+        logger.debug("Getting reward points by client {}", clientId);
         return transactionService.findAllApplicableTransactionsByClient(clientId)
                 .stream()
                 .map(t->{
@@ -45,8 +45,8 @@ public class RewardPointsServiceImpl implements RewardPointsService {
                 })
                 .collect(
                         Collectors.groupingBy(
-                                foo -> foo.getMonth(),
-                                Collectors.summingLong(foo->foo.getPoints())
+                                MonthlyRewardPointsResponse::getMonth,
+                                Collectors.summingLong(MonthlyRewardPointsResponse::getPoints)
                         )
                 )
                 .entrySet().stream().map( e-> new MonthlyRewardPointsResponse(e.getValue(),e.getKey()))
@@ -59,15 +59,14 @@ public class RewardPointsServiceImpl implements RewardPointsService {
         return transactionService.findAll()
                 .stream()
                 .map(t->{
-                    String month = getMonthFromDate(t.getDate());
                     Long points = rewardPointsTwoPointCalculator.calculate(t.getAmount());
                     points += rewardPointsOnePointCalculator.calculate(t.getAmount());
                     return new TotalRewardPointsResponse(points,t.getClientId());
                 })
                 .collect(
                         Collectors.groupingBy(
-                                foo -> foo.getClientId(),
-                                Collectors.summingLong(foo->foo.getPoints())
+                                TotalRewardPointsResponse::getClientId,
+                                Collectors.summingLong(TotalRewardPointsResponse::getPoints)
                         )
                 )
                 .entrySet().stream().map( e-> new TotalRewardPointsResponse(e.getValue(),e.getKey()))
@@ -76,7 +75,7 @@ public class RewardPointsServiceImpl implements RewardPointsService {
 
     @Override
     public ArrayList<TotalRewardPointsResponse> getRewardPointsByClientTotal(String clientId) {
-        logger.debug("Getting reward points by client " + clientId + " total");
+        logger.debug("Getting reward points by client {} total", clientId);
         return transactionService.findAllApplicableTransactionsByClient(clientId)
                 .stream()
                 .map(t->{
@@ -86,8 +85,8 @@ public class RewardPointsServiceImpl implements RewardPointsService {
                 })
                 .collect(
                         Collectors.groupingBy(
-                                foo -> foo.getClientId(),
-                                Collectors.summingLong(foo->foo.getPoints())
+                                TotalRewardPointsResponse::getClientId,
+                                Collectors.summingLong(TotalRewardPointsResponse::getPoints)
                         )
                 )
                 .entrySet().stream().map( e-> new TotalRewardPointsResponse(e.getValue(),e.getKey()))

@@ -13,11 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.Optional;
 
@@ -28,6 +26,7 @@ import static com.overactive.java.assessment.response.GenericRestResponse.getGen
 public class TransactionController extends GenericController{
 
     private static final Logger logger = LoggerFactory.getLogger(TransactionController.class);
+    public static final String TRANSACTIONS_NOT_FOUND = "Transactions not found";
     private final TransactionService transactionService;
 
     @Autowired
@@ -38,26 +37,26 @@ public class TransactionController extends GenericController{
 
     @GetMapping(produces=MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Get all transaction", notes = "Gets all transactions persisted", response = TransactionResponseForRewards.class)
-    public GenericRestResponse<?> getAllTransactions(
-            HttpServletRequest httpServletRequest) throws Exception {
+    public GenericRestResponse<TransactionResponseForRewards> getAllTransactions(
+            HttpServletRequest httpServletRequest) throws NotFoundException {
 
-        logger.info(httpServletRequest.getMethod() + ":" + httpServletRequest.getRequestURI());
-
-        ArrayList<TransactionResponseForRewards> resultList;
+        logRequest(httpServletRequest);
 
         logger.info("Get transactions");
-        resultList = transactionService.findAll();
-        logger.debug("resultList:" + resultList.toString());
+        var resultList = transactionService.findAll();
 
         if (resultList.isEmpty()) {
-            logger.error("Transactions not found");
-            throw new NotFoundException("Transactions not found");
+            logger.error(TRANSACTIONS_NOT_FOUND);
+            throw new NotFoundException(TRANSACTIONS_NOT_FOUND);
         }
 
         var response =
                 getGenericRestResponse(resultList, API_V, HttpStatus.OK.toString(), "");
 
-        logger.debug("response:"+response);
+        if(logger.isDebugEnabled()){
+            logResults(resultList.toString());
+            logResponse(response);
+        }
         return response;
 
     }
@@ -65,104 +64,117 @@ public class TransactionController extends GenericController{
 
     @GetMapping(value= "/{tranId}", produces=MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Get transaction",notes = "Get transaction by ID",response = TransactionResponseForRewards.class)
-    public GenericRestResponse<?> getTransaction(
+    public GenericRestResponse<TransactionResponseForRewards> getTransaction(
             HttpServletRequest httpServletRequest,
             @ApiParam(value = "Transaction identification", required = true)
             @PathVariable("tranId")
-                    Long transactionId) throws Exception {
+                    Long transactionId) throws NotFoundException {
 
-        logger.info(httpServletRequest.getMethod() + ":" + httpServletRequest.getRequestURI());
+        logRequest(httpServletRequest);
 
-        logger.info("Get transaction by id: " + transactionId);
-        var resultList = transactionService.findTransaction(transactionId);
-        logger.debug("resultList:" + resultList.toString());
+        logger.info("Get transaction by id: {}", transactionId);
+        var resultList =
+                transactionService.findTransaction(transactionId);
 
         if (resultList.isEmpty()) {
-            logger.error("Transactions not found");
-            throw new NotFoundException("Transactions not found");
+            logger.error(TRANSACTIONS_NOT_FOUND);
+            throw new NotFoundException(TRANSACTIONS_NOT_FOUND);
         }
 
         var response =
                 getGenericRestResponse(resultList, API_V, HttpStatus.OK.toString(), "");
 
-        logger.debug("response:"+response);
+        if(logger.isDebugEnabled()){
+            logResults(resultList.toString());
+            logResponse(response);
+        }
         return response;
 
     }
 
     @PostMapping(consumes=MediaType.APPLICATION_JSON_VALUE, produces=MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Save transaction",notes = "Persist a new transaction to DB",response = GenericRestResponse.class)
-    public GenericRestResponse<?> saveTransaction(
+    public GenericRestResponse<TransactionResponseForRewards> saveTransaction(
             HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse,
             @ApiParam(value = "Transaction data", required = true)
             @RequestBody @Valid
                     Transaction transaction){
-        logger.info(httpServletRequest.getMethod() + ":" + httpServletRequest.getRequestURI());
+
+        logRequest(httpServletRequest);
 
         transaction.setDate(new Date());
-        logger.debug("Transaction:" + transaction);
+        logger.debug("Transaction: {}", transaction);
 
-        logger.info("Save transaction: " + transaction);
-        var resultList = transactionService.saveTransaction(transaction);
-        logger.debug("resultList:" + resultList.toString());
+        logger.info("Save transaction: {}",transaction);
+        var resultList =
+                transactionService.saveTransaction(transaction);
 
         var response =
                 getGenericRestResponse(resultList, API_V, HttpStatus.CREATED.toString(), "");
 
         httpServletResponse.setStatus(HttpStatus.CREATED.value());
-        logger.debug("response:"+response);
+        if(logger.isDebugEnabled()){
+            logResults(resultList.toString());
+            logResponse(response);
+        }
         return response;
     }
 
     @DeleteMapping(value="/{tranId}", produces= MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Delete transaction by ID", notes = "Removes a transaction by ID from DB", response = GenericRestResponse.class)
-    public GenericRestResponse<?> removeTransaction(
+    public GenericRestResponse<TransactionResponseForRewards> removeTransaction(
             HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse,
             @ApiParam(value = "Transaction identification", required = true)
             @PathVariable("tranId")
-                    Optional<Long> transactionId) throws Exception {
+                    Optional<Long> transactionId) throws NotFoundException {
 
-        logger.info(httpServletRequest.getMethod() + ":" + httpServletRequest.getRequestURI());
+        logRequest(httpServletRequest);
 
         if(transactionId.isEmpty()) {
             logger.error("Transaction Id was expected");
             throw new NotFoundException("Transaction Id expected");
         }
 
-        logger.info("Remove transaction by id: " + transactionId);
-        var resultList = transactionService.removeTransaction(transactionId.get());
-        logger.debug("resultList:" + resultList.toString());
+        logger.info("Remove transaction by id: {}", transactionId);
+        var resultList =
+                transactionService.removeTransaction(transactionId.get());
 
         var response =
                 getGenericRestResponse(resultList, API_V, HttpStatus.OK.toString(), "");
 
-        logger.debug("response:"+response);
+        if(logger.isDebugEnabled()){
+            logResults(resultList.toString());
+            logResponse(response);
+        }
         return response;
     }
 
     @PutMapping(consumes=MediaType.APPLICATION_JSON_VALUE, produces=MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Edit transaction by ID", notes = "Edits a persisted transaction", response = TransactionResponseForRewards.class)
-    public GenericRestResponse<?> editTransaction(
+    public GenericRestResponse<TransactionResponseForRewards> editTransaction(
             HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse,
             @ApiParam(value = "Transaction data", required = true)
             @RequestBody @Valid
-                    Transaction transaction) throws Exception {
+                    Transaction transaction) throws NotFoundException {
 
-        logger.info(httpServletRequest.getMethod() + ":" + httpServletRequest.getRequestURI());
+        logRequest(httpServletRequest);
 
         if(transaction.getId() == null) {
             logger.error("Transaction Id was expected");
             throw new NotFoundException("Transaction Id expected");
         }
 
-        logger.info("Edit transaction: " + transaction);
-        var resultList = transactionService.editTransaction(transaction);
-        logger.debug("resultList:" + resultList.toString());
+        logger.info("Edit transaction: {}", transaction);
+        var resultList =
+                transactionService.editTransaction(transaction);
 
         var response =
                 getGenericRestResponse(resultList, API_V, HttpStatus.OK.toString(), "");
 
-        logger.debug("response:"+response);
+        if(logger.isDebugEnabled()){
+            logResults(resultList.toString());
+            logResponse(response);
+        }
         return response;
     }
 

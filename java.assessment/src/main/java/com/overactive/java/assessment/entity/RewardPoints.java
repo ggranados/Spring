@@ -3,7 +3,6 @@ package com.overactive.java.assessment.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-
 import java.math.BigDecimal;
 
 @AllArgsConstructor

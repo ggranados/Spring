@@ -28,10 +28,10 @@ class RewardPointsCalculatorTest {
     @DisplayName("Testing expected 1 point for every dollar spent over $50 in each transaction")
     void calculateBy1PointRule() {
         assertAll(
-                ()-> assertEquals(rewardPoints1PointsCalculator.calculate(BigDecimal.ZERO),0L, ()-> "0 points expected to be calculated for amount of 0"),
-                ()-> assertEquals(rewardPoints1PointsCalculator.calculate(new BigDecimal(50)),50L,()-> "50 points expected to be calculated for amount of 50"),
-                ()-> assertEquals(rewardPoints1PointsCalculator.calculate(new BigDecimal(100)),50L,()-> "50 points expected to be calculated for amount of 100"),
-                ()-> assertEquals(rewardPoints1PointsCalculator.calculate(new BigDecimal(120)),50L,()-> "50 points expected to be calculated for amount of 120")
+                ()-> assertEquals(0L,rewardPoints1PointsCalculator.calculate(BigDecimal.ZERO), ()-> "0 points expected to be calculated for amount of 0"),
+                ()-> assertEquals(50L,rewardPoints1PointsCalculator.calculate(new BigDecimal(50)),()-> "50 points expected to be calculated for amount of 50"),
+                ()-> assertEquals(50L,rewardPoints1PointsCalculator.calculate(new BigDecimal(100)),()-> "50 points expected to be calculated for amount of 100"),
+                ()-> assertEquals(50L,rewardPoints1PointsCalculator.calculate(new BigDecimal(120)),()-> "50 points expected to be calculated for amount of 120")
         );
     }
 
@@ -39,10 +39,10 @@ class RewardPointsCalculatorTest {
     @DisplayName("Testing expected 2 points for every dollar spent over $100 in each transaction")
     void calculateBy2PointRule() {
         assertAll(
-                ()-> assertEquals(rewardPoints2PointsCalculator.calculate(BigDecimal.ZERO),0L, ()-> "0 points expected to be calculated for amount of 0"),
-                ()-> assertEquals(rewardPoints2PointsCalculator.calculate(new BigDecimal(50)),0L,()-> "0 points expected to be calculated  for amount of 50"),
-                ()-> assertEquals(rewardPoints2PointsCalculator.calculate(new BigDecimal(100)),0L, ()-> "0 points expected to be calculated for amount of 100"),
-                ()-> assertEquals(rewardPoints2PointsCalculator.calculate(new BigDecimal(120)),40L, ()-> "40 points to be calculated fo amount of 120")
+                ()-> assertEquals(0L,rewardPoints2PointsCalculator.calculate(BigDecimal.ZERO), ()-> "0 points expected to be calculated for amount of 0"),
+                ()-> assertEquals(0L,rewardPoints2PointsCalculator.calculate(new BigDecimal(50)),()-> "0 points expected to be calculated  for amount of 50"),
+                ()-> assertEquals(0L,rewardPoints2PointsCalculator.calculate(new BigDecimal(100)), ()-> "0 points expected to be calculated for amount of 100"),
+                ()-> assertEquals(40L,rewardPoints2PointsCalculator.calculate(new BigDecimal(120)), ()-> "40 points to be calculated fo amount of 120")
         );
     }
 

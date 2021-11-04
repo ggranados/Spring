@@ -5,9 +5,9 @@ import lombok.Getter;
 import lombok.ToString;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Getter
 @ToString
@@ -21,27 +21,27 @@ public class GenericRestResponse<T> {
     @ApiModelProperty(value = "Response metadata")
     private final GenericMetadata meta;
 
-    public GenericRestResponse(ArrayList<T> list, GenericMetadata meta) {
-        this.data = list;
+    public GenericRestResponse(List<T> list, GenericMetadata meta) {
+        this.data = new ArrayList<>(list);
         this.meta = meta;
     }
 
-    public static GenericRestResponse<RewardPointsResponse> getGenericRestResponse
-            (ArrayList<?> resultList, String apiVersion, String responseCode, String errorMessage) {
+    public static <T> GenericRestResponse<T> getGenericRestResponse
+            (List<T> resultList, String apiVersion, String responseCode, String errorMessage) {
         var response = new GenericRestResponse<>(
-                (ArrayList<RewardPointsResponse>) resultList,
+                resultList,
                 new GenericRestResponse.GenericMetadata(
                         apiVersion, new Date(), responseCode, errorMessage)
         );
         logger.error(errorMessage);
-        logger.debug("response:" + response);
+        logger.debug("response:{}", response);
 
         return response;
     }
 
-    public static GenericRestResponse<RewardPointsResponse> getGenericErrorRestResponse
+    public static <T> GenericRestResponse<T> getGenericErrorRestResponse
             (String exMessage, String apiVersion, Integer errorCode) {
-        return getGenericRestResponse(new ArrayList<>(), apiVersion, errorCode.toString(), exMessage);
+        return getGenericRestResponse(new ArrayList<T>(), apiVersion, errorCode.toString(), exMessage);
     }
 
     @Getter

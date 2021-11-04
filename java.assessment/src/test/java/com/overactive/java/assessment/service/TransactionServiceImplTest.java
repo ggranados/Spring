@@ -80,7 +80,7 @@ class TransactionServiceImplTest {
 
         assertAll(
                 ()-> assertNotNull(result, ()-> "Resulting list should not be null"),
-                ()-> assertEquals(result.size(), 1, ()-> "Resulting list should not be empty"),
+                ()-> assertEquals(1,result.size(),  ()-> "Resulting list should not be empty"),
                 ()-> assertTrue(result instanceof ArrayList,()-> "Expected ArrayList result type"),
                 ()-> assertTrue(result.get(0) instanceof TransactionResponseForRewards,()-> "Expected elements of TransactionResponseForRewards in result list"),
                 ()-> assertEquals(result.get(0).getId(), trxApplicableForBoth.getId(), ()-> "Expected same id saved element")
@@ -99,7 +99,7 @@ class TransactionServiceImplTest {
 
         assertAll(
                 ()-> assertNotNull(result, ()-> "Resulting list should not be null"),
-                ()-> assertEquals(result.size(), 1, ()-> "Resulting list should not be empty"),
+                ()-> assertEquals(1,result.size(),  ()-> "Resulting list should not be empty"),
                 ()-> assertTrue(result instanceof ArrayList,()-> "Expected ArrayList result type"),
                 ()-> assertTrue(result.get(0) instanceof TransactionResponseForRewards,()-> "Expected elements of TransactionResponseForRewards in result list")
         );
@@ -155,7 +155,7 @@ class TransactionServiceImplTest {
 
         assertAll(
                 ()-> assertNotNull(result, ()-> "Resulting list should not be null"),
-                ()-> assertEquals(result.size(), 1, ()-> "Resulting list should not be empty"),
+                ()-> assertEquals(1, result.size(),  ()-> "Resulting list should not be empty"),
                 ()-> assertTrue(result instanceof ArrayList,()-> "Expected ArrayList result type"),
                 ()-> assertTrue(result.get(0) instanceof TransactionResponseForRewards,()-> "Expected elements of TransactionResponseForRewards in result list")
         );
