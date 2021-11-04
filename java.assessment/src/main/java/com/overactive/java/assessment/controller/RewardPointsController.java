@@ -2,7 +2,6 @@ package com.overactive.java.assessment.controller;
 
 import com.overactive.java.assessment.response.GenericRestResponse;
 import com.overactive.java.assessment.response.MonthlyRewardPointsResponse;
-import com.overactive.java.assessment.response.RewardPointsResponse;
 import com.overactive.java.assessment.response.TotalRewardPointsResponse;
 import com.overactive.java.assessment.service.RewardPointsServiceImpl;
 import io.swagger.annotations.ApiOperation;
@@ -19,7 +18,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
-
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.Optional;
@@ -95,7 +93,7 @@ public class RewardPointsController extends GenericController{
 
         if (resultList.isEmpty()) {
             logger.error(POINTS_FOR_CLIENT_S_NOT_FOUND, clientId.get());
-            throw new NotFoundException("Rewards points for client: " + clientId.get() + " not found");
+            throw new NotFoundException(getNotFoundMsg(clientId));
         }
 
         var response =
@@ -109,56 +107,30 @@ public class RewardPointsController extends GenericController{
         return response;
     }
 
-    @GetMapping(path = "clients/{clientId}/{period}", produces = MediaType.APPLICATION_JSON_VALUE)
-    @ApiOperation(value = "Get reward points by client ID and period ID", notes = "Gets all applicable Rewards Points by client and period, which can be monthly or total (as default)", response = MonthlyRewardPointsResponse.class)
-    public GenericRestResponse<? extends RewardPointsResponse> getRewardPointsByClientByPeriod(
+    private String getNotFoundMsg(Optional<String> clientId) {
+        return "Rewards points for client: " + clientId.get() + " not found";
+    }
+
+    @GetMapping(path = "clients/{clientId}/monthly", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Get monthly reward points by client ID", notes = "Gets all applicable Rewards Points by client monthly", response = MonthlyRewardPointsResponse.class)
+    public GenericRestResponse<MonthlyRewardPointsResponse> getRewardPointsByClientMonthly(
             HttpServletRequest httpServletRequest,
             @ApiParam(value = "Client identification", required = true)
             @PathVariable("clientId")
-                    Optional<String> clientId,
-            @ApiParam(value = "Period identification", required = true, allowableValues = "MONTHLY,TOTAL")
-            @PathVariable("period")
-                    Optional<String> period) throws NotFoundException {
+                    Optional<String> clientId) throws NotFoundException {
 
         logRequest(httpServletRequest);
-        logger.debug("Params:[clientId: {}, period: {} ]", clientId, period);
+        logger.debug("Params:[clientId: {}, period: monthly]", clientId);
 
-        ArrayList<? extends RewardPointsResponse> resultList = null;
-        String errorMessage = "";
-
-        boolean periodIsNotIndicated = period.isEmpty();
-        if (periodIsNotIndicated) {
-            logger.info("Requested reward points without parameters, assuming all rewards as default");
-            resultList = rewardPointsService.getAllRewardPoints();
-        } else {
-
-            if (!clientId.isPresent()) {
-                logger.error(CLIENT_WAS_EXPECTED);
-                throw new ResponseStatusException(
-                        HttpStatus.BAD_REQUEST, CLIENT_WAS_EXPECTED
-                );
-            }else {
-
-                String periodVal = period.orElse("default").toUpperCase();
-
-                switch (periodVal) {
-                    case "MONTHLY":
-                        logger.info("Requested monthly reward points by client");
-                        resultList = rewardPointsService.getRewardPointsByClientMonthly(clientId.get());
-                        break;
-
-                    case "TOTAL":
-                        logger.info("Requested default total reward points by client");
-                        resultList = rewardPointsService.getRewardPointsByClientTotal(clientId.get());
-                        break;
-
-                    default:
-                        errorMessage = "period param: Expected [MONTHLY|TOTAL] assumed default TOTAL";
-                        logger.info("Assumed default total reward points by client");
-                        resultList = rewardPointsService.getRewardPointsByClientTotal(clientId.get());
-                }
-            }
+        if (!clientId.isPresent()) {
+            logger.error(CLIENT_WAS_EXPECTED);
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST, CLIENT_WAS_EXPECTED
+            );
         }
+
+        logger.info("Requested monthly reward points by client");
+        var resultList = rewardPointsService.getRewardPointsByClientMonthly(clientId.get());
 
         boolean noResultsFound = resultList == null || resultList.isEmpty();
         if (noResultsFound) {
@@ -167,7 +139,7 @@ public class RewardPointsController extends GenericController{
         }
 
         var response =
-                getGenericRestResponse(resultList, API_V, HttpStatus.OK.toString(), errorMessage);
+                getGenericRestResponse(resultList, API_V, HttpStatus.OK.toString(), "");
 
         if(logger.isDebugEnabled()){
             logResults(resultList.toString());
@@ -176,7 +148,41 @@ public class RewardPointsController extends GenericController{
         return response;
     }
 
+    @GetMapping(path = "clients/{clientId}/total", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Get total reward points by client ID", notes = "Gets all applicable Rewards Points by client", response = MonthlyRewardPointsResponse.class)
+    public GenericRestResponse<TotalRewardPointsResponse> getRewardPointsByClientTotally(
+            HttpServletRequest httpServletRequest,
+            @ApiParam(value = "Client identification", required = true)
+            @PathVariable("clientId")
+                    Optional<String> clientId) throws NotFoundException {
 
+        logRequest(httpServletRequest);
+        logger.debug("Params:[clientId: {}, period: total]", clientId);
 
+        if (!clientId.isPresent()) {
+            logger.error(CLIENT_WAS_EXPECTED);
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST, CLIENT_WAS_EXPECTED
+            );
+        }
+
+        logger.info("Requested default total reward points by client");
+        var resultList = rewardPointsService.getRewardPointsByClientTotal(clientId.get());
+
+        boolean noResultsFound = resultList == null || resultList.isEmpty();
+        if (noResultsFound) {
+            logger.error("Rewards points for client: {}  not found", clientId);
+            throw new NotFoundException("Rewards points for client: " + clientId + " not found");
+        }
+
+        var response =
+                getGenericRestResponse(resultList, API_V, HttpStatus.OK.toString(), "");
+
+        if(logger.isDebugEnabled()){
+            logResults(resultList.toString());
+            logResponse(response);
+        }
+        return response;
+    }
 
 }
