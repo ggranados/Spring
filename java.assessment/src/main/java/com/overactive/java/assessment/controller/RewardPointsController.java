@@ -34,7 +34,7 @@ public class RewardPointsController extends GenericController{
 
     private static final Logger logger = LoggerFactory.getLogger(RewardPointsController.class);
     public static final String CLIENT_WAS_EXPECTED = "Client was expected";
-    public static final String POINTS_FOR_CLIENT_S_NOT_FOUND = "Rewards points for client: %s not found";
+    public static final String POINTS_FOR_CLIENT_S_NOT_FOUND = "Rewards points for client: {} not found";
 
     private final RewardPointsServiceImpl rewardPointsService;
 
@@ -80,7 +80,7 @@ public class RewardPointsController extends GenericController{
                     Optional<String> clientId) throws NotFoundException {
 
         logRequest(httpServletRequest);
-        logger.debug("Params:[clientId: %s ]", clientId);
+        logger.debug("Params:[clientId: {} ]", clientId);
 
         if (clientId.isEmpty()) {
             logger.error(CLIENT_WAS_EXPECTED);
@@ -121,7 +121,7 @@ public class RewardPointsController extends GenericController{
                     Optional<String> period) throws NotFoundException {
 
         logRequest(httpServletRequest);
-        logger.debug("Params:[clientId: %s, period: %s ]", clientId, period);
+        logger.debug("Params:[clientId: {}, period: {} ]", clientId, period);
 
         ArrayList<?> resultList = null;
         String errorMessage = "";
@@ -162,8 +162,8 @@ public class RewardPointsController extends GenericController{
 
         boolean noResultsFound = resultList == null || resultList.isEmpty();
         if (noResultsFound) {
-            logger.error("Rewards points for client: %s  not found", clientId.get());
-            throw new NotFoundException("Rewards points for client: " + clientId.get() + " not found");
+            logger.error("Rewards points for client: {}  not found", clientId);
+            throw new NotFoundException("Rewards points for client: " + clientId + " not found");
         }
 
         var response =
@@ -181,11 +181,11 @@ public class RewardPointsController extends GenericController{
     }
 
     private void logRequest(HttpServletRequest httpServletRequest) {
-        logger.info("%s : %s.", httpServletRequest.getMethod(), httpServletRequest.getRequestURI());
+        logger.info("{} : {}.", httpServletRequest.getMethod(), httpServletRequest.getRequestURI());
     }
 
     private void logResponse(GenericRestResponse<RewardPointsResponse> response) {
-        logger.debug("response: %s", response);
+        logger.debug("response: {}", response);
     }
 
 
