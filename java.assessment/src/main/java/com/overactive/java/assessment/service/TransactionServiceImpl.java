@@ -3,7 +3,7 @@ package com.overactive.java.assessment.service;
 import com.overactive.java.assessment.entity.Transaction;
 import com.overactive.java.assessment.entity.TransactionPage;
 import com.overactive.java.assessment.entity.TransactionSearchCriteria;
-import com.overactive.java.assessment.repository.TransactionCriteriaRepositoy;
+import com.overactive.java.assessment.repository.TransactionCriteriaRepository;
 import com.overactive.java.assessment.repository.TransactionRepository;
 import com.overactive.java.assessment.response.TransactionResponseForRewards;
 import org.slf4j.Logger;
@@ -27,11 +27,11 @@ public class TransactionServiceImpl implements TransactionService {
     public static final String NO_TRANSACTIONS_WITH_ID = "No transactions with id {}";
 
     private final TransactionRepository transactionRepository;
-    private final TransactionCriteriaRepositoy transactionCriteriaRepositoy;
+    private final TransactionCriteriaRepository transactionCriteriaRepositoy;
 
     @Autowired
     public TransactionServiceImpl(TransactionRepository transactionRepository,
-                                  TransactionCriteriaRepositoy transactionCriteriaRepositoy) {
+                                  TransactionCriteriaRepository transactionCriteriaRepositoy) {
         this.transactionRepository = transactionRepository;
         this.transactionCriteriaRepositoy = transactionCriteriaRepositoy;
     }

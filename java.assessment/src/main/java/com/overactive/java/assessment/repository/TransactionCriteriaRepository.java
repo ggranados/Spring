@@ -18,13 +18,13 @@ import java.util.List;
 import java.util.Objects;
 
 @Repository
-public class TransactionCriteriaRepositoy {
+public class TransactionCriteriaRepository {
 
     private final EntityManager entityManager;
     private final CriteriaBuilder criteriaBuilder;
 
     @Autowired
-    public TransactionCriteriaRepositoy(EntityManager entityManager) {
+    public TransactionCriteriaRepository(EntityManager entityManager) {
         this.entityManager = entityManager;
         this.criteriaBuilder = entityManager.getCriteriaBuilder();
     }
