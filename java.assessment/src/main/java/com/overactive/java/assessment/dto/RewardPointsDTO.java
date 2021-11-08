@@ -1,4 +1,4 @@
-package com.overactive.java.assessment.entity;
+package com.overactive.java.assessment.dto;
 
 
 import lombok.AllArgsConstructor;
@@ -7,7 +7,7 @@ import java.math.BigDecimal;
 
 @AllArgsConstructor
 @Data
-public class RewardPoints {
+public class RewardPointsDTO {
     private String clientId;
     private String month;
     private Long points;
