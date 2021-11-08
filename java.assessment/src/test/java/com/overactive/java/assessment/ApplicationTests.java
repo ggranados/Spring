@@ -187,7 +187,7 @@ class ApplicationTests {
 		trxDtoApplicableForBoth.setAmount(BigDecimal.valueOf(1000.00));
 
 		var result = mockMvc.perform(
-						put("/api/v1/transactions")
+						put("/api/v1/transactions/" + trxDtoApplicableForBoth.getId())
 								.contentType(MediaType.APPLICATION_JSON)
 								.content(asJsonString(trxDtoApplicableForBoth))
 				).andDo(print())

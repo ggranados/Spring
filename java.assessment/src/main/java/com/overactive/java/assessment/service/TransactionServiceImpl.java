@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 public class TransactionServiceImpl implements TransactionService {
 
     private static final Logger logger = LoggerFactory.getLogger(TransactionServiceImpl.class);
-    public static final String TRANSACTION_NOT_FOUND = "Transaction not found: {}";
+    public static final String TRANSACTION_NOT_FOUND = "Transaction not found: {0}";
     public static final String NO_TRANSACTIONS_WITH_ID = "No transactions with id {}";
 
     private final TransactionRepository transactionRepository;
@@ -93,9 +93,9 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public ArrayList<TransactionResponseForRewards> editTransaction(Transaction transaction) {
+    public ArrayList<TransactionResponseForRewards> editTransaction(Transaction transaction, Long transactionId) {
         logger.debug("Editing transactions with id {}", transaction);
-        Optional<Transaction> t = transactionRepository.findById(transaction.getId());
+        Optional<Transaction> t = transactionRepository.findById(transactionId);
         if(!t.isPresent()){
             logger.debug(NO_TRANSACTIONS_WITH_ID, transaction.getId());
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, MessageFormat.format(TRANSACTION_NOT_FOUND, transaction.getId()));

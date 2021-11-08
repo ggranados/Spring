@@ -148,7 +148,7 @@ class TransactionServiceImplTest {
 
         when(repository.findById(1L)).thenReturn(Optional.of(trxApplicableForBoth));
 
-        ArrayList<TransactionResponseForRewards> result = service.editTransaction(trxApplicableForBoth);
+        ArrayList<TransactionResponseForRewards> result = service.editTransaction(trxApplicableForBoth, trxApplicableForBoth.getId());
 
         verify(repository, times(1)).findById(1L);
         verify(repository, times(1)).save(trxApplicableForBoth);
@@ -166,7 +166,7 @@ class TransactionServiceImplTest {
     void editNotFoundTransaction() {
         when(repository.findById(1L)).thenReturn(Optional.empty());
 
-        assertThrows(ResponseStatusException.class, ()->service.editTransaction(trxApplicableForBoth), "Expected response status exception");
+        assertThrows(ResponseStatusException.class, ()->service.editTransaction(trxApplicableForBoth, trxApplicableForBoth.getId()), "Expected response status exception");
 
         verify(repository, times(1)).findById(1L);
         verify(repository, times(0)).save(any());

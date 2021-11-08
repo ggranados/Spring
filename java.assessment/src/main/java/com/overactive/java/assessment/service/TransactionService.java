@@ -8,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.web.server.ResponseStatusException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 
 public interface TransactionService {
@@ -23,7 +24,7 @@ public interface TransactionService {
     ArrayList<TransactionResponseForRewards> removeTransaction(Long transactionId)
             throws ResponseStatusException;
 
-    ArrayList<TransactionResponseForRewards> editTransaction(Transaction transaction);
+    ArrayList<TransactionResponseForRewards> editTransaction(Transaction transaction, Long transactionId);
 
     Page<Transaction> getTransactions(TransactionPage page,
                                              TransactionSearchCriteria searchCriteria);

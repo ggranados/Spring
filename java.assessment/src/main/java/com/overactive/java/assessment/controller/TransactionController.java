@@ -165,24 +165,27 @@ public class TransactionController extends GenericController{
         return response;
     }
 
-    @PutMapping(consumes=MediaType.APPLICATION_JSON_VALUE, produces=MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(value ="/{tranId}", consumes=MediaType.APPLICATION_JSON_VALUE, produces=MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Edit transaction by ID", notes = "Edits a persisted transaction", response = TransactionResponseForRewards.class)
     public GenericRestResponse<TransactionResponseForRewards> editTransaction(
             HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse,
             @ApiParam(value = "Transaction data", required = true)
             @RequestBody @Valid
-                    TransactionDTO transaction) throws NotFoundException {
+                    TransactionDTO transaction,
+            @ApiParam(value = "Transaction identification", required = true)
+            @PathVariable("tranId")
+                    Optional<Long> transactionId) throws NotFoundException {
 
         logRequest(httpServletRequest);
 
-        if(transaction.getId() == null) {
+        if(!transactionId.isPresent()) {
             logger.error("Transaction Id was expected");
             throw new NotFoundException("Transaction Id expected");
         }
 
         logger.info("Edit transaction: {}", transaction);
         var resultList =
-                transactionService.editTransaction(mapToEntity(transaction));
+                transactionService.editTransaction(mapToEntity(transaction), transactionId.get());
 
         var response =
                 getGenericRestResponse(resultList, API_V, HttpStatus.OK.toString(), "");
