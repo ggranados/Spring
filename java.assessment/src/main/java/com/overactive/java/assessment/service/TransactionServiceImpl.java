@@ -13,6 +13,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -21,7 +23,7 @@ import java.util.stream.Collectors;
 public class TransactionServiceImpl implements TransactionService {
 
     private static final Logger logger = LoggerFactory.getLogger(TransactionServiceImpl.class);
-    public static final String TRANSACTION_NOT_FOUND = "Transaction not found: ";
+    public static final String TRANSACTION_NOT_FOUND = "Transaction not found: {}";
     public static final String NO_TRANSACTIONS_WITH_ID = "No transactions with id {}";
 
     private final TransactionRepository transactionRepository;
@@ -70,7 +72,7 @@ public class TransactionServiceImpl implements TransactionService {
         Optional<Transaction> t = transactionRepository.findById(transactionId);
         if(!t.isPresent()){
             logger.debug(NO_TRANSACTIONS_WITH_ID, transactionId);
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, TRANSACTION_NOT_FOUND + transactionId);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, MessageFormat.format(TRANSACTION_NOT_FOUND, transactionId));
         }
         ArrayList<TransactionResponseForRewards> list = new ArrayList<>();
         list.add(new TransactionResponseForRewards(t.get()));
@@ -83,7 +85,7 @@ public class TransactionServiceImpl implements TransactionService {
         Optional<Transaction> t = transactionRepository.findById(transactionId);
         if(!t.isPresent()){
             logger.debug(NO_TRANSACTIONS_WITH_ID, transactionId);
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, TRANSACTION_NOT_FOUND + transactionId);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, MessageFormat.format(TRANSACTION_NOT_FOUND, transactionId));
         }
         transactionRepository.delete(t.get());
 
@@ -96,7 +98,7 @@ public class TransactionServiceImpl implements TransactionService {
         Optional<Transaction> t = transactionRepository.findById(transaction.getId());
         if(!t.isPresent()){
             logger.debug(NO_TRANSACTIONS_WITH_ID, transaction.getId());
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, TRANSACTION_NOT_FOUND + transaction.getId());
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, MessageFormat.format(TRANSACTION_NOT_FOUND, transaction.getId()));
         }
         transactionRepository.save(transaction);
 
