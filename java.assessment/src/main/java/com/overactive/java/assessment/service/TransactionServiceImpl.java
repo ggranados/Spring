@@ -1,11 +1,15 @@
 package com.overactive.java.assessment.service;
 
 import com.overactive.java.assessment.entity.Transaction;
+import com.overactive.java.assessment.entity.TransactionPage;
+import com.overactive.java.assessment.entity.TransactionSearchCriteria;
+import com.overactive.java.assessment.repository.TransactionCriteriaRepositoy;
 import com.overactive.java.assessment.repository.TransactionRepository;
 import com.overactive.java.assessment.response.TransactionResponseForRewards;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -19,12 +23,17 @@ public class TransactionServiceImpl implements TransactionService {
     private static final Logger logger = LoggerFactory.getLogger(TransactionServiceImpl.class);
     public static final String TRANSACTION_NOT_FOUND = "Transaction not found: ";
     public static final String NO_TRANSACTIONS_WITH_ID = "No transactions with id {}";
+
     private final TransactionRepository transactionRepository;
+    private final TransactionCriteriaRepositoy transactionCriteriaRepositoy;
 
     @Autowired
-    public TransactionServiceImpl(TransactionRepository transactionRepository) {
+    public TransactionServiceImpl(TransactionRepository transactionRepository,
+                                  TransactionCriteriaRepositoy transactionCriteriaRepositoy) {
         this.transactionRepository = transactionRepository;
+        this.transactionCriteriaRepositoy = transactionCriteriaRepositoy;
     }
+
 
     @Override
     public ArrayList<TransactionResponseForRewards> findAll() {
@@ -36,9 +45,9 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public ArrayList<TransactionResponseForRewards> findAllApplicableTransactionsByClient(String clientid) {
-        logger.debug("Getting all applicable transactions by client {}", clientid);
-        return transactionRepository.findTransactionByClientIdAndApplicable(clientid, Boolean.TRUE)
+    public ArrayList<TransactionResponseForRewards> findAllApplicableTransactionsByClient(String clientId) {
+        logger.debug("Getting all applicable transactions by client {}", clientId);
+        return transactionRepository.findTransactionByClientIdAndApplicable(clientId, Boolean.TRUE)
                 .stream()
                 .map(TransactionResponseForRewards::new)
                 .collect(Collectors.toCollection(ArrayList::new));
@@ -94,5 +103,11 @@ public class TransactionServiceImpl implements TransactionService {
         ArrayList<TransactionResponseForRewards> list = new ArrayList<>();
         list.add(new TransactionResponseForRewards(t.get()));
         return list;
+    }
+
+    @Override
+    public Page<Transaction> getTransactions(TransactionPage page,
+                                             TransactionSearchCriteria searchCriteria){
+        return transactionCriteriaRepositoy.findAllWithFilters(page, searchCriteria);
     }
 }

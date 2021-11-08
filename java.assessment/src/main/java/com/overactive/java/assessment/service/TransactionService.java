@@ -1,7 +1,10 @@
 package com.overactive.java.assessment.service;
 
 import com.overactive.java.assessment.entity.Transaction;
+import com.overactive.java.assessment.entity.TransactionPage;
+import com.overactive.java.assessment.entity.TransactionSearchCriteria;
 import com.overactive.java.assessment.response.TransactionResponseForRewards;
+import org.springframework.data.domain.Page;
 import org.springframework.web.server.ResponseStatusException;
 import java.util.ArrayList;
 import java.util.List;
@@ -10,7 +13,7 @@ import java.util.List;
 public interface TransactionService {
     ArrayList<TransactionResponseForRewards> findAll();
 
-    List<TransactionResponseForRewards> findAllApplicableTransactionsByClient(String clientid);
+    List<TransactionResponseForRewards> findAllApplicableTransactionsByClient(String clientId);
 
     ArrayList<TransactionResponseForRewards> saveTransaction(Transaction transaction);
 
@@ -21,4 +24,7 @@ public interface TransactionService {
             throws ResponseStatusException;
 
     ArrayList<TransactionResponseForRewards> editTransaction(Transaction transaction);
+
+    Page<Transaction> getTransactions(TransactionPage page,
+                                             TransactionSearchCriteria searchCriteria);
 }

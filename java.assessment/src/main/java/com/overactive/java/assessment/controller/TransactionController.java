@@ -2,6 +2,8 @@ package com.overactive.java.assessment.controller;
 
 import com.overactive.java.assessment.dto.TransactionDTO;
 import com.overactive.java.assessment.entity.Transaction;
+import com.overactive.java.assessment.entity.TransactionPage;
+import com.overactive.java.assessment.entity.TransactionSearchCriteria;
 import com.overactive.java.assessment.response.GenericRestResponse;
 import com.overactive.java.assessment.response.TransactionResponseForRewards;
 import com.overactive.java.assessment.service.TransactionService;
@@ -11,8 +13,10 @@ import javassist.NotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -188,6 +192,12 @@ public class TransactionController extends GenericController{
             logResponse(response);
         }
         return response;
+    }
+
+    @GetMapping(value = "page", produces=MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Page<Transaction>> getTransactions(TransactionPage page,
+                                                             TransactionSearchCriteria searchCriteria){
+        return new ResponseEntity<>(transactionService.getTransactions(page, searchCriteria), HttpStatus.OK);
     }
 
 }
