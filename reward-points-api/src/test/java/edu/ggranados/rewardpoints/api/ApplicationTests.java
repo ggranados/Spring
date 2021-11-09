@@ -228,4 +228,18 @@ class ApplicationTests {
 
 
 	}
+
+	@Test
+	@DisplayName("Given Transactions When Get Transactions Page Then ApplicableResponseTransactions")
+	void givenTransaction_WhenGetTransactionsPage_ThenApplicableResponseTransactions() throws Exception {
+		mockMvc.perform(get("/api/v1/transactions/page?clientId=CLI001&pageNumber=0&pageSize=4&sorDirection=DESC&sortBy=amount"))
+				.andDo(print())
+				.andExpect(status().isOk())
+				.andExpect(content().contentType(MediaType.APPLICATION_JSON))
+				.andExpect(jsonPath("$.content").isNotEmpty())
+				.andExpect(jsonPath("$.content[0].clientId", is("CLI001")))
+				.andExpect(jsonPath("$.sort.sorted", is(true)))
+				.andExpect(jsonPath("$.pageable.pageSize", is(4)));
+
+	}
 }
