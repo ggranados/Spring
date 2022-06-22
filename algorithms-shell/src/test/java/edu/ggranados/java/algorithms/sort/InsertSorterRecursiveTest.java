@@ -8,9 +8,9 @@ import static edu.ggranados.java.algorithms.utils.IntegerUtils.getIntegerList;
 import static edu.ggranados.java.algorithms.utils.IntegerUtils.isEqualOrGreaterThan;
 import static org.junit.jupiter.api.Assertions.*;
 
-class InsertSortRecursiveTest {
+class InsertSorterRecursiveTest {
 
-    InsertSortRecursive insertSort = new InsertSortRecursive();
+    InsertSorterRecursive insertSort = new InsertSorterRecursive();
     ArrayList<Integer> elements = new ArrayList<>();
 
     @Test

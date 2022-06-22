@@ -10,9 +10,9 @@ import static edu.ggranados.java.algorithms.utils.IntegerUtils.isEqualOrGreaterT
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class InsertSortIterativeTest {
+class InsertSorterIterativeTest {
 
-    InsertSortIterative insertSort = new InsertSortIterative();
+    InsertSorterIterative insertSort = new InsertSorterIterative();
     ArrayList<Integer> elements = new ArrayList<>();
 
     @Test

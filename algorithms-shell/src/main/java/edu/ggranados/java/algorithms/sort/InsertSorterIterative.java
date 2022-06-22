@@ -1,11 +1,13 @@
 package edu.ggranados.java.algorithms.sort;
 
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-@Component("InsertSortIterative")
-public class InsertSortIterative implements Sort<Integer> {
+@Lazy
+@Component("insertSorterIterative")
+public class InsertSorterIterative implements Sorter<Integer> {
 
     @Override
     public List<Integer> sort(List<Integer> elements){
