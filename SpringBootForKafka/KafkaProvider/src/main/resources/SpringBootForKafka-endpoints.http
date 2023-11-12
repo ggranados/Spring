@@ -1,0 +1,12 @@
+###
+POST http://localhost:8080/kafka/message
+Content-Type: application/json
+
+{
+  "message": "Un mensaje bien chingón"
+}
+
+<> 2023-11-12T184001.200.txt
+<> 2023-11-12T183937.400.txt
+<> 2023-11-12T183928.400.txt
+<> 2023-11-12T183316.200.txt
